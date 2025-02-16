@@ -15,4 +15,5 @@ public interface IHomeConentView {
     void showCategoryMeals(List<MealDto> meals);
     void showInspricarionMeal(MealDto mealDto);
 
+    void lodingAnimationChangeState(Boolean state);
 }

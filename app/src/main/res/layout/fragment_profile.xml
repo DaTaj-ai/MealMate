@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppinsbold"
+        android:fontFamily="@font/poppinsregular"
         android:text="Profile"
         android:textColor="@color/MyBlack"
         android:textSize="35sp"
@@ -48,12 +48,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="23dp"
+        android:fontFamily="@font/poppinsregular"
         android:text="Mohamed Tag"
         android:textColor="@color/MyBlack"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        android:fontFamily="@font/poppinsregular"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
@@ -72,9 +72,15 @@
         app:layout_constraintTop_toBottomOf="@+id/profileName" />
 
 
+    <!-- Download Button -->
+
     <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
+        android:id="@+id/uploadBackupBtn"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="60dp"
         android:backgroundTint="@color/lidght_gray"
         android:elevation="50dp"
         android:text="Upload My Backup"
@@ -82,38 +88,46 @@
         app:cornerRadius="10sp"
         app:icon="@drawable/cloudupload"
         app:iconTint="@color/PrimaryColor"
-        tools:layout_editor_absoluteX="64dp"
-        tools:layout_editor_absoluteY="363dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileEmailName" />
 
     <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
+        android:id="@+id/downloadBackupBtn"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lidght_gray"
         android:elevation="50dp"
-        android:text="Dawnload My Backup"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        android:text="Download My Backup"
         android:textColor="@color/MyBlack"
         app:cornerRadius="10sp"
         app:icon="@drawable/clouddownload"
         app:iconTint="@color/PrimaryColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.659"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="468dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/uploadBackupBtn"
+        android:layout_marginTop="16dp" />
 
+    <!-- Logout Button -->
     <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
+        android:id="@+id/logoutBackupBtn"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lidght_gray"
         android:elevation="50dp"
         android:text="Logout"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
         android:textColor="@color/logout"
         app:cornerRadius="10sp"
         app:icon="@drawable/logout"
         app:iconTint="@color/logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="578dp" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/downloadBackupBtn"
+        android:layout_marginTop="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

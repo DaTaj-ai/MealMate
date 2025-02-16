@@ -10,9 +10,11 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
@@ -45,7 +48,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
     ImageView imageView;
     TextView textView;
-
+    LottieAnimationView lottieAnimationView ;
     private static final String TAG = "HomeContentFragment";
 //    @Override
 //    public void onSuccess(List MealDtos) {
@@ -56,6 +59,17 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 //        Log.i(TAG, "onSuccess: " + MealDtos.size());
 //    }
 
+
+    @Override
+    public void lodingAnimationChangeState(Boolean state) {
+        if (state) {
+            lottieAnimationView.setVisibility(View.VISIBLE);
+        }
+        else{
+            new Handler().postDelayed(() -> {lottieAnimationView.setVisibility(View.GONE);},2000);
+
+        }
+    }
 
     @Override
     public void showCategory(List<String> items) {
@@ -113,6 +127,10 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         ingredientsChipGroup = view.findViewById(R.id.ingredientsChipGroup);
         areaChipGroup = view.findViewById(R.id.AreasChipGroup);
 
+
+        lottieAnimationView = view.findViewById(R.id.loadingAnimaion);
+
+
         imageView = view.findViewById(R.id.inspirationCardImage);
         textView = view.findViewById(R.id.mealNameInspirationCard);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +150,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(myAdapter);
 
         HomeContentPresenter presenter = new HomeContentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));

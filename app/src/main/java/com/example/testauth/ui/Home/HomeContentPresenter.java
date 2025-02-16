@@ -2,6 +2,7 @@ package com.example.testauth.ui.Home;
 
 import android.telephony.ClosedSubscriberGroupInfo;
 import android.util.Log;
+import android.view.View;
 
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
@@ -33,13 +34,14 @@ public class HomeContentPresenter {
 
     public void getInspricarionMeal(){
         repository.getRemoteMeals().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).map(meal->meal.getMeals().get(0))
-                .doOnNext( meal->{ui.showInspricarionMeal(meal);}).doOnError(e-> Log.i(TAG, "getInspricarionMeal: " + e.getMessage())).subscribe();}
+                .doOnNext( meal->{ui.showInspricarionMeal(meal);}).doOnComplete(()-> {ui.lodingAnimationChangeState(false);}).doOnError(e-> Log.i(TAG, "getInspricarionMeal: " + e.getMessage())).subscribe();}
 
     private static final String TAG = "HomeContentPresenter";
     public void getMeals(){
         repository.getRemoteMeals().subscribe(new Observer<ListMealDto>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
+                ui.lodingAnimationChangeState(true);
                 Log.i(TAG, "getMeals + onSubscribe: ");
             }
 
@@ -55,7 +57,7 @@ public class HomeContentPresenter {
 
             @Override
             public void onComplete() {
-
+               // ui.lodingAnimationChangeState(false);
             }
         });
 
@@ -100,7 +102,7 @@ public class HomeContentPresenter {
         {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-
+//                ui.lodingAnimationChangeState(true);
             }
 
             @Override
@@ -120,7 +122,7 @@ public class HomeContentPresenter {
 
             @Override
             public void onComplete() {
-
+               // ui.lodingAnimationChangeState(false);
             }
         });
 

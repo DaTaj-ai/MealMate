@@ -119,17 +119,6 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         favoriteBtn = view.findViewById(R.id.FavoriteBtn);
         mealDetailsPresentor = new MealDetailsPresentor(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
 
-        WebView webView = view.findViewById(R.id.videoView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
-
-// Replace 'VIDEO_ID' with the actual YouTube video ID
-        String videoId = "v=rp8Slv4INLk";
-        String html = "<html><body><iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/"
-                + videoId + "\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
-
-        webView.loadData(html, "text/html", "utf-8");
-
 
 //        mealDetailsPresentor.getMealsFromFireBase().addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
@@ -169,6 +158,23 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         myAdapter = new MyAdapter(getContext(), GlobalMealDto.getIngredientDtos());
         Glide.with(this).load(GlobalMealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(mealImage);
 
+        WebView webView = view.findViewById(R.id.videoView);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
+        String videoId;
+        if(GlobalMealDto.getStrYoutube() != null){
+            videoId = getYouTubeVideoId(GlobalMealDto.getStrYoutube());
+
+        }
+        else {
+            videoId = "";
+        }
+
+        String html = "<html><body><iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/"
+                + videoId + "\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
+
+        webView.loadData(html, "text/html", "utf-8");
+
         favoriteBtn.setOnClickListener(v -> {
             GlobalMealDto.setFavorite(true);
             mealDetailsPresentor.insertMeal(GlobalMealDto);
@@ -182,6 +188,11 @@ public class MealDetails extends Fragment implements IMealDetailsView {
             Snackbar.make(view, "welcome to Guest Mode \n Login to get full access", Snackbar.LENGTH_LONG).show();
         }
     }
+    String getYouTubeVideoId(String url) {
+        String videoId = "";
+        videoId = url.substring(url.indexOf("=") + 1);
+        return videoId;
+    };
 
     void showCalender() {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
@@ -223,7 +234,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             holder.ingrdientNameTxt.setText(ingredientDtoViews.get(position).getIngredient());
             holder.measureIngrdientTxt.setText(ingredientDtoViews.get(position).getMeasure());
-            //Glide.with(context).load(ingredientDtos.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
+            Glide.with(context).load("https://www.themealdb.com/images/ingredients/"+ ingredientDtoViews.get(position).getIngredient()+"-Small.png").placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
         }
 
         @Override

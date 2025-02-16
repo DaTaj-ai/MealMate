@@ -50,12 +50,6 @@ public class SplashFragment extends Fragment {
                 Intent intent = new Intent(requireActivity(), HomeActivity.class);
                 startActivity(intent);
                 requireActivity().finish();
-
-//                HomeFragment homeFragment = new HomeFragment();
-//                FragmentManager fragmentManager = getParentFragmentManager();
-//                FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                transaction.replace(R.id.nav_host_fragment_content_main, homeFragment);
-//                transaction.commit();
             }
         }, 15);
     }
