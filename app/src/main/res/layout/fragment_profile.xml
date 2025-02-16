@@ -1,14 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backGroundPages"
     tools:context=".ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="160dp"
+        android:background="@drawable/profile_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profile_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-60dp"
+        android:src="@drawable/profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        app:strokeColor="@color/MyYellow"
+        app:strokeWidth="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Profile"
+        android:textColor="@color/MyBlack"
+        android:textSize="35sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:text="Mohamed Tag"
+        android:textColor="@color/MyBlack"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        android:fontFamily="@font/poppinsregular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+
+    <TextView
+        android:id="@+id/profileEmailName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/poppinsregular"
+        android:text="mohamedtajeldin@gmail.com"
+        android:textColor="@color/MyBlack"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileName" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/lidght_gray"
+        android:elevation="50dp"
+        android:text="Upload My Backup"
+        android:textColor="@color/MyBlack"
+        app:cornerRadius="10sp"
+        app:icon="@drawable/cloudupload"
+        app:iconTint="@color/PrimaryColor"
+        tools:layout_editor_absoluteX="64dp"
+        tools:layout_editor_absoluteY="363dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/lidght_gray"
+        android:elevation="50dp"
+        android:text="Dawnload My Backup"
+        android:textColor="@color/MyBlack"
+        app:cornerRadius="10sp"
+        app:icon="@drawable/clouddownload"
+        app:iconTint="@color/PrimaryColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.659"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="468dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/lidght_gray"
+        android:elevation="50dp"
+        android:text="Logout"
+        android:textColor="@color/logout"
+        app:cornerRadius="10sp"
+        app:icon="@drawable/logout"
+        app:iconTint="@color/logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="578dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
