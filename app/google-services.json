@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "864392789980",
+    "project_id": "mealmatev01",
+    "storage_bucket": "mealmatev01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864392789980:android:32770a63b4a302ea239919",
+        "android_client_info": {
+          "package_name": "com.example.testauth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3NTN4bW-af8VGvtYFWlb8W41xe1tn4n0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">testAuth</string>
+    <string name="client_id">864392789980-b73kgqdcgbi6asrkje4eju3bcpkioka8.apps.googleusercontent.com</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search">Search</string>
+    <string name="password">Password</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="email">Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="emailConst">Email</string>
+    <string name="helloConst">Hello!</string>
+    <string name="or_sign_up_withConst">--- Or Sign Up with ---</string>
+    <string name="profile">Profile</string>
+    <string name="Favorites">Favorite</string>
+    <string name="search_menu">Search</string>
+    <string name="menu_calender">calender</string>
+    <string name="FavoritesRecipesConsts">Favorite Recipes</string>
+    <string name="home">Home</string>
+    <string name="SearchConsts">\nSearch recipes</string>
+    <string name="CreateAnAccountConst">Create an account</string>
+    <string name="welcomConst">Let’s help you set up your account,\n it won’t take long.</string>
+    <string name="nameConsts">Name\n</string>
+    <string name="confirmPasswordConst">Confirm Password</string>
+    <string name="GetCookingConst">Get \n CooKing</string>
+    <string name="welcomToMealMate">"welcome to Meal Mate "</string>
+    <string name="GusetConst">Guest</string>
+    <string name="title_activity_home">Leanback HomeActivity</string>
+    <string name="browse_title">Videos by Your Company</string>
+    <string name="related_movies">Related Videos</string>
+    <string name="grid_view">Grid View</string>
+    <string name="error_fragment">Error Fragment</string>
+    <string name="personal_settings">Personal Settings</string>
+    <string name="watch_trailer_1">Watch trailer</string>
+    <string name="watch_trailer_2">FREE</string>
+    <string name="rent_1">Rent By Day</string>
+    <string name="rent_2">From $1.99</string>
+    <string name="buy_1">Buy and Own</string>
+    <string name="buy_2">AT $9.99</string>
+    <string name="movie">Movie</string>
+
+    <!-- Error messages -->
+    <string name="error_fragment_message">An error occurred</string>
+    <string name="dismiss_error">Dismiss</string>
+</resources>

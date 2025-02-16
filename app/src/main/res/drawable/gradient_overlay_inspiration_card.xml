@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Semi-transparent black gradient overlay -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:startColor="@color/gradient_overlay_start"
+                android:endColor="#00000000"
+                android:gradientRadius="200"/>
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+
+</layer-list>

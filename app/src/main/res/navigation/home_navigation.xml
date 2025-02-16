@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_navigation"
+    android:label="HomeNavigation"
+    app:startDestination="@id/homeContentFragment">
+
+    <fragment
+        android:id="@+id/RHomeFragment"
+        android:name="com.example.testauth.ui.Home.HomeFragment"
+        android:label="fragment_r_home"
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_RHomeFragment_to_favoriteFragment4"
+            app:destination="@id/favoriteFragment" />
+
+        <action
+            android:id="@+id/action_RHomeFragment_to_searchFragment4"
+            app:destination="@id/searchFragment"
+
+            />
+
+        <action
+            android:id="@+id/action_RHomeFragment_to_calenderFragment4"
+            app:destination="@id/calenderFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/calenderFragment"
+        android:name="com.example.testauth.ui.calender.CalenderFragmentView"
+        android:label="fragment_calender"
+        tools:layout="@layout/fragment_calender">
+        <action
+            android:id="@+id/action_calenderFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_calenderFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.testauth.ui.Favorites.FavoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" />
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.testauth.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/homeContentFragment"
+        android:name="com.example.testauth.ui.Home.HomeContentFragment"
+        android:label="fragment_home_content"
+        tools:layout="@layout/fragment_home_content">
+        <action
+            android:id="@+id/action_homeContentFragment_to_mealDetails"
+            app:destination="@id/mealDetails" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.testauth.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/mealDetails"
+        android:name="com.example.testauth.ui.mailditails.MealDetails"
+        android:label="MealDetails">
+        <argument
+            android:name="mealto"
+            app:argType="com.example.testauth.Models.MealDto" />
+        <action
+            android:id="@+id/action_mealDetails_to_homeContentFragment"
+            app:destination="@id/homeContentFragment" />
+    </fragment>
+
+</navigation>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Chip Background Color -->
+    <color name="chip_background_color">#F3F3F3</color>
+
+    <!-- Chip Text Style -->
+    <style name="ChipTextStyle" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerSize" >20dp</item>
+        <item name="fontFamily">@font/poppinsbold</item> <!-- Match your design -->
+    </style>
+
+</resources>
