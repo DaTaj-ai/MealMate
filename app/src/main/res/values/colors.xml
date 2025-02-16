@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="PrimaryColor">#129575</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="edit_text_Border">#D9D9D9</color>
+    <color name="MyBlack">#121212</color>
+    <color name="MyblackLite">#121212</color>
+    <color name="naviBlue">#0A2533</color>
+    <color name="MyYellow">#FF9C00</color>
+    <color name="backGroundPages">#F6FAF9</color>
+    <color name="Mygray">#D9D9D9</color>
+        <color name="gradient_overlay_start">#B4000000</color>
+    <color name="lidght_gray">#E6EBF2</color>
+    <color name="darkGray">#A9A9A9</color>
+    <color name="background_gradient_start">#000000</color>
+    <color name="background_gradient_end">#DDDDDD</color>
+    <color name="fastlane_background">#0096a6</color>
+    <color name="search_opaque">#ffaa3f</color>
+    <color name="selected_background">#ffaa3f</color>
+    <color name="default_background">#3d3d3d</color>
 </resources>
