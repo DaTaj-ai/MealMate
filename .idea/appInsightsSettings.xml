@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.mealmate" />
-                  <option name="mobileSdkAppId" value="1:465058054213:android:310e90cf3d5c66771aa32c" />
-                  <option name="projectId" value="mealmate-b2845" />
-                  <option name="projectNumber" value="465058054213" />
+                  <option name="appId" value="com.example.testauth" />
+                  <option name="mobileSdkAppId" value="1:864392789980:android:32770a63b4a302ea239919" />
+                  <option name="projectId" value="mealmatev01" />
+                  <option name="projectNumber" value="864392789980" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

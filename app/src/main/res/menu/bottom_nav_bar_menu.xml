@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/home_navigation"
+            android:icon="@drawable/homeicon"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/favoriteFragment"
+            android:icon="@drawable/favorite_heart_empty"
+            android:title="@string/Favorites" />
+
+        <item
+            android:id="@+id/calenderFragment"
+            android:icon="@drawable/calendar"
+            android:title="@string/menu_calender" />
+
+        <item
+            android:id="@+id/searchFragment"
+            android:icon="@drawable/searchicon"
+            android:title="@string/search_menu" />
+
+        <item
+            android:id="@+id/profileFragment"
+            android:icon="@drawable/profile"
+            android:title="@string/profile" />
+    </group>
+</menu>
