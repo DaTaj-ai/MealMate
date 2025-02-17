@@ -28,14 +28,14 @@
         android:id="@+id/backupBtn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="32dp"
         android:background="@drawable/gray_square_small"
         android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/mealsCalenderText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mealsCalenderText"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toTopOf="@+id/mealsCalenderText"
+        app:layout_constraintVertical_bias="0.818" />
 
     <View
         android:id="@+id/view2"
@@ -63,14 +63,11 @@
         android:id="@+id/CalenderRecyclerView"
         android:layout_width="418dp"
         android:layout_height="336dp"
-        android:layout_marginStart="1dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="70dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mealsCalenderText" />
+        app:layout_constraintTop_toBottomOf="@+id/backupBtn" />
 
     <TextView
         android:id="@+id/mealsCalenderText"

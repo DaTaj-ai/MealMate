@@ -18,10 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.testauth.Models.CategoryDto;
 import com.example.testauth.Models.MealDto;
-import com.example.testauth.Network.NetworkCallBack;
-import com.example.testauth.Network.NetworkService;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;

@@ -26,23 +26,23 @@ public interface ApiMealOperations {
     @GET("list.php")
     Observable<ListCategoryDto> getAllCategories(@Query("c") String categoryType);
 
-    //www.themealdb.com/api/json/v1/1/list.php?c=list
    // Area,
     @GET("list.php")
     Observable<ListAreaDto> getAllAreas(@Query("a")  String areaType);
-
-    @GET("filter.php")
-    Observable<ListMealDto> filterByArea(@Query("a")  String areaType);
-
 
     // Ingredients
     @GET("list.php")
     Observable<ListIngredientDto> getAllIngredients(@Query("i") String ingredientType);
 
+    @GET("filter.php")
+    Observable<ListMealDto> filterByArea(@Query("a")  String areaType);
+
+    @GET("filter.php")
+    Observable<ListMealDto> filterByCategory(@Query("c")  String areaType);
+
+    @GET("filter.php")
+    Observable<ListMealDto> filterByIngredient(@Query("i")  String areaType);
 
 
 }
 
-//www.themealdb.com/api/json/v1/1/list.php?c=list
-//www.themealdb.com/api/json/v1/1/list.php?a=list
-//www.themealdb.com/api/json/v1/1/list.php?i=list

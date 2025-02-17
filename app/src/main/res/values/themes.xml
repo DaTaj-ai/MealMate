@@ -18,7 +18,7 @@
 
         <item name="windowSplashScreenBackground">@color/MyYellow</item>
 
-        <item name="windowSplashScreenAnimatedIcon">@drawable/location_icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/location</item>
 
         <!-- Animation duration (optional) -->
         <item name="windowSplashScreenAnimationDuration">500</item> <!-- 500ms -->

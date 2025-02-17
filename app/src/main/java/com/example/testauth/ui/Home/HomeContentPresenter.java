@@ -33,12 +33,12 @@ public class HomeContentPresenter {
     }
 
     public void getInspricarionMeal(){
-        repository.getRemoteMeals().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).map(meal->meal.getMeals().get(0))
+        repository.getRemoteMeals("").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).map(meal->meal.getMeals().get(0))
                 .doOnNext( meal->{ui.showInspricarionMeal(meal);}).doOnComplete(()-> {ui.lodingAnimationChangeState(false);}).doOnError(e-> Log.i(TAG, "getInspricarionMeal: " + e.getMessage())).subscribe();}
 
     private static final String TAG = "HomeContentPresenter";
     public void getMeals(){
-        repository.getRemoteMeals().subscribe(new Observer<ListMealDto>() {
+        repository.getRemoteMeals("").subscribe(new Observer<ListMealDto>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 ui.lodingAnimationChangeState(true);

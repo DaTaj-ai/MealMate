@@ -1,8 +1,13 @@
 package com.example.testauth.ui.Home;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
@@ -48,52 +54,13 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
     ImageView imageView;
     TextView textView;
-    LottieAnimationView lottieAnimationView ;
+    HomeContentPresenter presenter ;
+    LottieAnimationView lottieAnimationView;
     private static final String TAG = "HomeContentFragment";
-//    @Override
-//    public void onSuccess(List MealDtos) {
-//        GloblaMealList = MealDtos;
-//        myAdapter.notifyItemChanged(GloblaMealList);
-//        myAdapter.notifyDataSetChanged();
-//
-//        Log.i(TAG, "onSuccess: " + MealDtos.size());
-//    }
+
+    Boolean IS_LOADED = false;
 
 
-    @Override
-    public void lodingAnimationChangeState(Boolean state) {
-        if (state) {
-            lottieAnimationView.setVisibility(View.VISIBLE);
-        }
-        else{
-            new Handler().postDelayed(() -> {lottieAnimationView.setVisibility(View.GONE);},2000);
-
-        }
-    }
-
-    @Override
-    public void showCategory(List<String> items) {
-        populateChipGroup(CategoryChipGroup, items);
-    }
-
-    @Override
-    public void showInspricarionMeal(MealDto mealDto) {
-        GlobalinspirationMealDto = mealDto;
-        Glide.with(getContext()).load(mealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(imageView);
-        textView.setText(mealDto.getStrMeal());
-
-    }
-
-    @Override
-    public void showIngrdients(List<String> items) {
-        populateChipGroup(ingredientsChipGroup, items);
-
-    }
-
-    @Override
-    public void showArea(List<String> items) {
-        populateChipGroup(areaChipGroup, items);
-    }
 
     public HomeContentFragment() {
         // Required empty public constructor
@@ -101,16 +68,10 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
 
     @Override
-    public void showInsperationMeal(List<MealDto> meals) {
-
-    }
-
-
-    @Override
-    public void showCategoryMeals(List<MealDto> meals) {
-        GloblaMealList = meals;
-        myAdapter.notifyItemChanged(GloblaMealList);
-        myAdapter.notifyDataSetChanged();
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
+        presenter = new HomeContentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
+        IS_LOADED = true;
     }
 
     @Override
@@ -143,6 +104,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         });
 
 
+
         Log.i(TAG, "onViewCreated: ");
         myAdapter = new MyAdapter(getContext(), GloblaMealList);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewInspirationMeal);
@@ -153,30 +115,38 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(myAdapter);
 
-        HomeContentPresenter presenter = new HomeContentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         Boolean isQuest = sharedPreferences.getBoolean("isQuest", false);
 
 
-        Log.i(TAG, "onViewCreated: " + isQuest  );
-        if (isQuest)  {
-            recyclerView.setVisibility(View.GONE);
-            if (isAdded() && getActivity() != null && !isDetached()) {
-                presenter.getInspricarionMeal();
-                presenter.getCategotyList();
-                presenter.getAreasList();
+
+        if (isNetworkConnected()) {
+            Snackbar.make(getView(), "internet", Snackbar.LENGTH_LONG);
+
+            Log.i(TAG, "onViewCreated: " + isQuest);
+            if (isQuest) {
+                recyclerView.setVisibility(View.GONE);
+                if (isAdded() && getActivity() != null && !isDetached()) {
+                    presenter.getInspricarionMeal();
+                    presenter.getCategotyList();
+                    presenter.getAreasList();
+                }
+            } else {
+                if (isAdded() && getActivity() != null && !isDetached()) {
+                    presenter.getMeals();
+                    presenter.getCategotyList();
+                    presenter.getAreasList();
+                    presenter.getIngrdientsList();
+                    presenter.getInspricarionMeal();
+                }
             }
-        }
-        else {
-            if (isAdded() && getActivity() != null && !isDetached()) {
-            presenter.getMeals();
-            presenter.getCategotyList();
-            presenter.getAreasList();
-            presenter.getIngrdientsList();
-            presenter.getInspricarionMeal();
-        }
+        } else {
+            Snackbar.make(getView(), "No internet", Snackbar.LENGTH_LONG);
+            lottieAnimationView.setAnimation(R.raw.no_internet);
         }
     }
+
+
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private final Context context;
@@ -246,6 +216,61 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
     }
 
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+
+    @Override
+    public void lodingAnimationChangeState(Boolean state) {
+        if (state) {
+            lottieAnimationView.setVisibility(View.VISIBLE);
+        } else {
+            new Handler().postDelayed(() -> {
+                lottieAnimationView.setVisibility(View.GONE);
+            }, 2000);
+
+        }
+    }
+
+    @Override
+    public void showCategory(List<String> items) {
+        populateChipGroup(CategoryChipGroup, items);
+    }
+
+    @Override
+    public void showInspricarionMeal(MealDto mealDto) {
+        GlobalinspirationMealDto = mealDto;
+        Glide.with(getContext()).load(mealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(imageView);
+        textView.setText(mealDto.getStrMeal());
+
+    }
+
+    @Override
+    public void showInsperationMeal(List<MealDto> meals) {
+
+    }
+
+    @Override
+    public void showIngrdients(List<String> items) {
+        populateChipGroup(ingredientsChipGroup, items);
+
+    }
+
+
+    @Override
+    public void showCategoryMeals(List<MealDto> meals) {
+        GloblaMealList = meals;
+        myAdapter.notifyItemChanged(GloblaMealList);
+        myAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showArea(List<String> items) {
+        populateChipGroup(areaChipGroup, items);
+    }
 
     private void populateChipGroup(ChipGroup chipGroup, List<String> items) {
         for (String item : items) {
@@ -271,4 +296,5 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
             chipGroup.addView(chip);
         }
     }
+
 }

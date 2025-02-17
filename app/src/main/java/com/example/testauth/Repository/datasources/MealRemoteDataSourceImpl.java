@@ -77,8 +77,11 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
     }
 
 
-    public Observable<ListMealDto> getMeals() {
-        Observable<ListMealDto> observable = apiMealOperations.getMeals("").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    public Observable<ListMealDto> getMeals(String query) {
+        Observable<ListMealDto> observable = apiMealOperations.
+                getMeals(query).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
         return observable;
     }
 
@@ -150,7 +153,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
     }
 
 
-    public DatabaseReference getMealsFromFireBase(){
+    public DatabaseReference getMealsFromFireBase() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String userId = auth.getCurrentUser().getUid(); // Get the logged-in user
 
@@ -185,7 +188,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
 
 
     @Override
-    public DatabaseReference getUserCalenderFireBase(){
+    public DatabaseReference getUserCalenderFireBase() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String userId = auth.getCurrentUser().getUid(); // Get the logged-in user
 
@@ -193,7 +196,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
                 .getReference("users")
                 .child(userId)
                 .child("Calender");
-        return calendarRef ;
+        return calendarRef;
 //        calendarRef.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {

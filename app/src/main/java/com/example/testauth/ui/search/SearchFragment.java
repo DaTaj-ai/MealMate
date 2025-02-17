@@ -35,9 +35,11 @@ import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -45,16 +47,14 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
     ChipGroup countryGroup;
-
     ImageButton filterBtn;
     BottomSheetDialog bottomSheetDialog;
-
     SearchView searchView;
-
     List<MealDto> GloblaMealList = new ArrayList<>();
     RecyclerView recyclerView;
     MySearchAdapter mySearchAdapter;
@@ -72,40 +72,23 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        presenter = new SearchFragmentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
+        // get  meals
+        Disposable mealsObservable = presenter.searchMeals("").doOnNext(mealDtoList -> {
+            GloblaMealList = mealDtoList.getMeals();
+            mySearchAdapter.notifyItemChanged(GloblaMealList);
+            mySearchAdapter.notifyDataSetChanged();
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+    }
+
+    Observable<String> searchQueryObservable ;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        presenter = new SearchFragmentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
-        // get  meals
-        Observable<ListMealDto> mealsObservable = presenter.searchMeals("");
-
-        Observer<ListMealDto> listMealDtoObserver = new Observer<ListMealDto>() {
-            @Override
-            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                Log.i(TAG, "onSubscribe: ");
-            }
-
-            @Override
-            public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListMealDto listMealDto) {
-                Log.i(TAG, "onNext: " + listMealDto.getMeals().get(0).getStrMeal());
-                GloblaMealList = listMealDto.getMeals();
-                mySearchAdapter.notifyItemChanged(GloblaMealList);
-                mySearchAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };
-        mealsObservable.subscribe(listMealDtoObserver);
 
         searchView = view.findViewById(R.id.searchView);
 
@@ -121,9 +104,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 countryGroup = bottomSheetView.findViewById(R.id.countryChipGroup);
                 ChipGroup ingredientsGroup = bottomSheetView.findViewById(R.id.ingredientsChipGroup);
                 ChipGroup categoryGroup = bottomSheetView.findViewById(R.id.categoryCard);
-
-//                populateChipGroup(ingredientsGroup, getIngredientsList()); // Replace with ingredients
-//                populateChipGroup(categoryGroup, getCategoryList());     // Replace with categories
 
                 //Categoty
                 Observable<ListCategoryDto> listCategoryDtoObservable = presenter.getAllCategories();
@@ -221,10 +201,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             }
         });
 
-        searchView = view.findViewById(R.id.searchView);
-
-
-        Observable<String> searchQueryObservable = Observable.create(emitter -> {
+        searchQueryObservable = Observable.create(emitter -> {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -234,31 +211,19 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     emitter.onNext(newText);
+                    if(newText.equals(" ") || newText.equals("")){
+                        Log.i(TAG, "YYYYYYYYYYYYYYYEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSS ");
+                        showMeals(GloblaMealList);
+                    }
+                    else{
+                        Log.i(TAG, "onQueryTextChange: " + GloblaMealList.size());
+                    }
                     return false;
                 }
             });
             emitter.setCancellable(() -> searchView.setOnQueryTextListener(null));
         });
-
-
-        Disposable disposable = searchQueryObservable
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .distinctUntilChanged()
-                .switchMap(query ->
-                        mealsObservable
-                                .flatMapIterable(ListMealDto::getMeals)
-                                .filter(meal -> matchesSearchQuery(meal, query.toLowerCase()))
-                                .toList()
-                                .toObservable()
-                )
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        filteredMeals -> {
-                            mySearchAdapter.notifyItemChanged(filteredMeals);
-                            mySearchAdapter.notifyDataSetChanged();
-                        },
-                        error -> Toast.makeText(getContext(), "Search failed: " + error.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+        presenter.setSearchQueryObservable(searchQueryObservable);
 
 
         mySearchAdapter = new MySearchAdapter(getContext(), GloblaMealList);
@@ -271,50 +236,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
     }
 
-    private boolean matchesSearchQuery(MealDto meal, String query) {
-        return containsIgnoreCase(meal.getStrMeal(), query) ||
-                containsIgnoreCase(meal.getStrCategory(), query) ||
-                containsIgnoreCase(meal.getStrArea(), query) ||
-                checkIngredients(meal, query);
-    }
-
-    private boolean checkIngredients(MealDto meal, String query) {
-        // List of all 20 ingredient fields
-        List<String> ingredients = Arrays.asList(
-                meal.getStrIngredient1(),
-                meal.getStrIngredient2(),
-                meal.getStrIngredient3(),
-                meal.getStrIngredient4(),
-                meal.getStrIngredient5(),
-                meal.getStrIngredient6(),
-                meal.getStrIngredient7(),
-                meal.getStrIngredient8(),
-                meal.getStrIngredient9(),
-                meal.getStrIngredient10(),
-                meal.getStrIngredient11(),
-                meal.getStrIngredient12(),
-                meal.getStrIngredient13(),
-                meal.getStrIngredient14(),
-                meal.getStrIngredient15(),
-                meal.getStrIngredient16(),
-                meal.getStrIngredient17(),
-                meal.getStrIngredient18(),
-                meal.getStrIngredient19(),
-                meal.getStrIngredient20()
-        );
-
-        // Check if any ingredient contains the query (null-safe)
-        for (String ingredient : ingredients) {
-            if (ingredient != null && ingredient.toLowerCase().contains(query)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean containsIgnoreCase(String source, String query) {
-        return source != null && source.toLowerCase().contains(query);
-    }
 
     private void populateChipGroup(ChipGroup chipGroup, List<String> items) {
         for (String item : items) {
@@ -360,6 +281,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                     chip.setTextColor(R.color.white);
                     Log.d("Filter", "Selected: Cantury" + item);
                     presenter.filterByArea(item).doOnNext(mealDtoList -> {
+                        GloblaMealList.addAll(mealDtoList.getMeals());
                         mySearchAdapter.notifyItemChanged(mealDtoList.getMeals());
                         mySearchAdapter.notifyDataSetChanged();
                     }).subscribe();
@@ -379,12 +301,18 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void showMeals(List<MealDto> meals) {
-        for (MealDto meal : meals) {
-            Log.i("SearchFragment", "showMeals: we are heeeeree  ");
-            Log.i("SearchFragment", "showMeals: " + meal.getStrMeal());
-        }
+        GloblaMealList.addAll(meals);
+        Log.i(TAG, "showMeals: " + GloblaMealList.size());
+        mySearchAdapter.notifyItemChanged(meals);
+        mySearchAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showSnackBar(String message) {
+        Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

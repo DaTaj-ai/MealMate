@@ -12,17 +12,23 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RepositoryImpl implements Repository {
 
-    private  MealRemoteDataSource remoteDataSourceMeal;
-    private  MealLocalDataSource localDataSourceMeal;
+    private MealRemoteDataSource remoteDataSourceMeal;
+    private MealLocalDataSource localDataSourceMeal;
     private static RepositoryImpl instance;
+
+    /* ----------------------------------
+                    Handel Caching
+       ----------------------------------
+     */
+    private Observable<ListMealDto> cachedGetRemoteMeals;
+    private Observable<ListMealDto> cachedGetRandomMeal;
+
 
     public static RepositoryImpl getInstance(MealRemoteDataSource RemoteDataSourceMeal, MealLocalDataSource LocalDataSourceMeal) {
         if (instance == null) {
@@ -36,33 +42,58 @@ public class RepositoryImpl implements Repository {
         this.localDataSourceMeal = LocalDataSourceMeal;
     }
 
-    public Completable insertLocal(MealDto mealDto){
+    /*
+ -----------------------------------------------------------------------
+  $$$$$$$$$$$$$$           Local functions           $$$$$$$$$$$$$$$$$
+ -----------------------------------------------------------------------
+                                                                    */
+
+    public Completable insertLocal(MealDto mealDto) {
         return localDataSourceMeal.insert(mealDto);
     }
 
-    public void deleteLocal(MealDto mealDto){
+    public void deleteLocal(MealDto mealDto) {
         localDataSourceMeal.delete(mealDto);
     }
 
-    public Flowable<List<MealDto>> getAllLocal(){
+    public Flowable<List<MealDto>> getAllLocal() {
         return localDataSourceMeal.getAllLocalMeals();
     }
 
-    public Observable<ListMealDto> getRemoteMeals(){
-        return  remoteDataSourceMeal.getMeals();
+    public Observable<ListMealDto> getRemoteMeals(String query) {
+            return remoteDataSourceMeal.getMeals(query);
     }
-    public Observable<ListCategoryDto> getAllCategories(){
+
+
+/*
+-----------------------------------------------------------------------
+  $$$$$$$$$$$$$$           Remote functions           $$$$$$$$$$$$$$$$$
+-----------------------------------------------------------------------
+                                                                    */
+
+    public Observable<ListCategoryDto> getAllCategories() {
         return remoteDataSourceMeal.getAllCategories();
     }
-    public Observable<ListAreaDto> getAllAreas(){
+
+    public Observable<ListAreaDto> getAllAreas() {
         return remoteDataSourceMeal.getAllAreas();
     }
-    public Observable<ListIngredientDto> getAllIngredients(){
+
+    public Observable<ListIngredientDto> getAllIngredients() {
         return remoteDataSourceMeal.getAllIngredients();
     }
-    public Observable<ListMealDto> filterByArea(String areaType){
+
+    public Observable<ListMealDto> filterByArea(String areaType) {
         return remoteDataSourceMeal.filterByArea(areaType);
     }
+
+    public Observable<ListMealDto> getRandomMeal() {
+        if (cachedGetRandomMeal == null) {
+            cachedGetRandomMeal = remoteDataSourceMeal.getRandomMeal();
+        }
+        return cachedGetRandomMeal;
+    }
+
 
     @Override
     public Completable insertToCalender(MealsCalenderDto mealCalenderDto) {
@@ -73,9 +104,11 @@ public class RepositoryImpl implements Repository {
     public Completable DeleteFromCalender(MealsCalenderDto mealCalenderDto) {
         return localDataSourceMeal.DeleteFromCalender(mealCalenderDto);
     }
+
     public Flowable<List<MealDto>> getAllIsFavorites() {
         return localDataSourceMeal.getAllIsFavorites();
     }
+
     @Override
     public Flowable<List<String>> getMealIdsForDate(String date) {
         return localDataSourceMeal.getMealIdsForDate(date);
@@ -86,31 +119,32 @@ public class RepositoryImpl implements Repository {
         return localDataSourceMeal.getMealsByIds(mealIds);
     }
 
-    // fire base functions
-    public void insertMealToFireBase(MealDto mealDto){
+    /*
+    ----------------------------------------------------------------------
+    $$$$$$$$$$$$$$           FireBase functions           $$$$$$$$$$$$$$$$
+    ----------------------------------------------------------------------
+                                                                      */
+    public void insertMealToFireBase(MealDto mealDto) {
         remoteDataSourceMeal.insertMealToFireBase(mealDto);
     }
 
-    public void insertCalenderFireBase(MealsCalenderDto mealsCalenderDto){
+    public void insertCalenderFireBase(MealsCalenderDto mealsCalenderDto) {
         remoteDataSourceMeal.insertCalenderFireBase(mealsCalenderDto);
     }
 
-    public void getUserMealsFromFireBase(){
+    public void getUserMealsFromFireBase() {
         remoteDataSourceMeal.getMealsFromFireBase();
     }
 
     @Override
-    public DatabaseReference getCalenderFromFireBase(){
+    public DatabaseReference getCalenderFromFireBase() {
         return remoteDataSourceMeal.getUserCalenderFireBase();
 
     }
 
     @Override
-    public DatabaseReference getMealsFromFireBase(){
+    public DatabaseReference getMealsFromFireBase() {
         return remoteDataSourceMeal.getMealsFromFireBase();
-    }
-    public Observable<ListMealDto> getRandomMeal() {
-        return remoteDataSourceMeal.getRandomMeal();
     }
 
 }

@@ -14,7 +14,7 @@ import java.util.List;
 import io.reactivex.rxjava3.core.Observable;
 
 public interface MealRemoteDataSource {
-    public Observable<ListMealDto> getMeals();
+    public Observable<ListMealDto> getMeals(String query);
     Observable<ListCategoryDto> getAllCategories();
     Observable<ListAreaDto> getAllAreas();
 
