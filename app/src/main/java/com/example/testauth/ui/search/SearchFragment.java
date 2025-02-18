@@ -2,12 +2,14 @@ package com.example.testauth.ui.search;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.example.testauth.CountryFlag;
 import com.example.testauth.Models.CategoryDto;
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
@@ -32,6 +37,7 @@ import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
+import com.example.testauth.ui.Home.HomeContentFragmentDirections;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -59,10 +65,18 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     RecyclerView recyclerView;
     MySearchAdapter mySearchAdapter;
     SearchFragmentPresenter presenter;
+    ChipGroup filteredGroup;
+
     private static final String TAG = "SearchFragment";
 
     public SearchFragment() {
         // Required empty public constructor
+    }
+
+    void addFilterChip(Chip item) {
+        Chip chip = new Chip(getContext());
+
+        this.filteredGroup.addView(item);
     }
 
     @Override
@@ -84,15 +98,16 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
     }
 
-    Observable<String> searchQueryObservable ;
+    Observable<String> searchQueryObservable;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         searchView = view.findViewById(R.id.searchView);
-
         filterBtn = view.findViewById(R.id.filterBtn);
+
+        filteredGroup = view.findViewById(R.id.filterCategoryCard);
+
         filterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,7 +115,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 View bottomSheetView = LayoutInflater.from(getActivity())
                         .inflate(R.layout.bottom_sheet_filter, null);
 
-                // Initialize ChipGroups
                 countryGroup = bottomSheetView.findViewById(R.id.countryChipGroup);
                 ChipGroup ingredientsGroup = bottomSheetView.findViewById(R.id.ingredientsChipGroup);
                 ChipGroup categoryGroup = bottomSheetView.findViewById(R.id.categoryCard);
@@ -115,15 +129,9 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListCategoryDto listCategoryDto) {
-                        for (CategoryDto cat : listCategoryDto.getCategoryDtoList()) {
-                            Log.i(TAG, "CategoryDto list onNext: " + cat.getStrCategory());
-                        }
                         if (categoryGroup != null && listCategoryDto != null) {
                             populateChipGroup(categoryGroup, listCategoryDto.toList());
                         }
-
-
-                        Log.i(TAG, " ListonNext : " + listCategoryDto.getCategoryDtoList().size());
                     }
 
                     @Override
@@ -153,7 +161,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                         if (countryGroup != null && listAreaDto != null) {
                             populateChipGroupCountry(countryGroup, listAreaDto.toList());
                         }
-
                     }
 
                     @Override
@@ -179,7 +186,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                     @Override
                     public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListIngredientDto listIngredientDto) {
                         if (ingredientsGroup != null && listIngredientDto != null) {
-                            populateChipGroup(ingredientsGroup, listIngredientDto.toList());
+                            populateChipGroupIngredient(ingredientsGroup, listIngredientDto.toList());
                         }
                     }
 
@@ -211,11 +218,9 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     emitter.onNext(newText);
-                    if(newText.equals(" ") || newText.equals("")){
-                        Log.i(TAG, "YYYYYYYYYYYYYYYEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSS ");
+                    if (newText.equals(" ") || newText.equals("")) {
                         showMeals(GloblaMealList);
-                    }
-                    else{
+                    } else {
                         Log.i(TAG, "onQueryTextChange: " + GloblaMealList.size());
                     }
                     return false;
@@ -223,6 +228,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             });
             emitter.setCancellable(() -> searchView.setOnQueryTextListener(null));
         });
+
         presenter.setSearchQueryObservable(searchQueryObservable);
 
 
@@ -245,15 +251,25 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             chip.setTextAppearance(R.style.ChipTextStyle);
             chip.setCheckable(true);
             chip.setCheckedIcon(null); // Remove checkmark
-
             chip.setText(item);
 
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
-                    // Handle filter selection
-                    Log.d("Filter", "Selected: " + item);
+                    chip.setChipBackgroundColorResource(R.color.PrimaryColor);
+                    Log.d("Filter", "Selected: Cantury" + item);
+                    presenter.filterByCategory(item).doOnNext(mealDtoList -> {
+                        GloblaMealList.addAll(mealDtoList.getMeals());
+                        mySearchAdapter.notifyItemChanged(mealDtoList.getMeals());
+                        mySearchAdapter.notifyDataSetChanged();
+                    }).subscribe();
+                    addFilterChip(chip);
+                    if (bottomSheetDialog != null && bottomSheetDialog.isShowing()) {
+                        bottomSheetDialog.dismiss();
+                    }
+
                 } else {
-                    // Handle filter removal
+                    chip.setTextAppearance(R.style.ChipTextStyle);
+
                     Log.d("Filter", "Deselected: " + item);
                 }
             });
@@ -284,6 +300,10 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                         GloblaMealList.addAll(mealDtoList.getMeals());
                         mySearchAdapter.notifyItemChanged(mealDtoList.getMeals());
                         mySearchAdapter.notifyDataSetChanged();
+                        if (chip.getParent() != null) {
+                            ((ViewGroup) chip.getParent()).removeView(chip);
+                        }
+                        addFilterChip(chip);
                     }).subscribe();
                     if (bottomSheetDialog != null && bottomSheetDialog.isShowing()) {
                         bottomSheetDialog.dismiss();
@@ -301,11 +321,64 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     }
 
 
+    @SuppressLint("ResourceAsColor")
+    private void populateChipGroupIngredient(ChipGroup chipGroup, List<String> items) {
+        for (String item : items) {
+            Chip chip = new Chip(getContext());
+
+            chip.setChipBackgroundColorResource(R.color.chip_background_color);
+            chip.setTextAppearance(R.style.ChipTextStyle);
+            chip.setCheckable(true);
+            chip.setCheckedIcon(null);
+            chip.setTextColor(R.color.PrimaryColor);
+            chip.setText(item);
+            Glide.with(getContext())
+                    .asDrawable()
+                    .load("https://www.themealdb.com/images/ingredients/" + item + "-Small.png")
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .into(new CustomTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            chip.setChipIcon(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            chip.setChipIcon(placeholder);
+                        }
+                    });
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    chip.setChipBackgroundColorResource(R.color.PrimaryColor);
+                    chip.setTextColor(R.color.white);
+                    presenter.filterByIngredient(item).doOnNext(mealDtoList -> {
+                        GloblaMealList.addAll(mealDtoList.getMeals());
+                        mySearchAdapter.notifyItemChanged(mealDtoList.getMeals());
+                        mySearchAdapter.notifyDataSetChanged();
+                        if (chip.getParent() != null) {
+                            ((ViewGroup) chip.getParent()).removeView(chip);
+                        }
+                        addFilterChip(chip);
+                    }).subscribe();
+                    if (bottomSheetDialog != null && bottomSheetDialog.isShowing()) {
+                        bottomSheetDialog.dismiss();
+                    }
+
+                } else {
+                    chip.setTextAppearance(R.style.ChipTextStyle);
+
+                    Log.d("Filter", "Deselected: " + item);
+                }
+            });
+            chipGroup.addView(chip);
+        }
+    }
+
+
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void showMeals(List<MealDto> meals) {
         GloblaMealList.addAll(meals);
-        Log.i(TAG, "showMeals: " + GloblaMealList.size());
         mySearchAdapter.notifyItemChanged(meals);
         mySearchAdapter.notifyDataSetChanged();
     }
@@ -345,6 +418,18 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
         public void onBindViewHolder(@NonNull MySearchAdapter.ViewHolder holder, int position) {
             holder.nameTxt.setText(MealDtoList.get(position).getStrMeal());
             Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
+            holder.locationTxt.setText(MealDtoList.get(position).getStrArea());
+            holder.categoryTxt.setText(MealDtoList.get(position).getStrCategory());
+            Glide.with(context).load(CountryFlag.getFlagUrl(MealDtoList.get(position).getStrArea())). into(holder.flagImage);
+            holder.image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SearchFragmentDirections.ActionSearchFragmentToMealDetails action = SearchFragmentDirections.actionSearchFragmentToMealDetails(MealDtoList.get(position));
+                    Log.i(TAG, "onClick: " + MealDtoList.get(position).getStrMeal());
+                    Navigation.findNavController(view).navigate(action);
+                }
+            });
+
         }
 
         @Override
@@ -362,6 +447,9 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             View layout;
             TextView nameTxt;
             ImageView image;
+            ImageView flagImage;
+            TextView categoryTxt;
+            TextView locationTxt;
 
 
             public ViewHolder(@NonNull View itemView) {
@@ -369,6 +457,9 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 layout = itemView;
                 nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
                 image = layout.findViewById(R.id.inspirationCardImage);
+                flagImage = layout.findViewById(R.id.flagImage);
+                categoryTxt = layout.findViewById(R.id.categoryCard);
+                locationTxt = layout.findViewById(R.id.varLocation);
 
             }
         }

@@ -1,50 +1,27 @@
 package com.example.testauth.Repository.datasources;
 
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.navigation.Navigation;
-
-import com.example.testauth.Models.CategoryDto;
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
 import com.example.testauth.Models.ListIngredientDto;
 import com.example.testauth.Models.ListMealDto;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
-import com.example.testauth.Models.UserDto;
 import com.example.testauth.Network.ApiMealOperations;
-import com.example.testauth.Network.NetworkCallBack;
-import com.example.testauth.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+
 
 public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
 
@@ -103,9 +80,19 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
         return apiMealOperations.filterByArea(areaType).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<ListMealDto> filterByIngredients(String ingredientType) {
+        return apiMealOperations.filterByIngredient(ingredientType).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<ListMealDto> filterByCategory(String categoryType) {
+        return apiMealOperations.filterByCategory(categoryType).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Observable<ListIngredientDto> getAllIngredients() {
         return apiMealOperations.getAllIngredients("list").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+
 
     public void insertMealToFireBase(MealDto mealDto) {
         FirebaseAuth auth;
@@ -221,43 +208,5 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
     }
 
 }
-
-
-//        Query emailQuery = fireBasereference.orderByChild("email").equalTo(userUsername);
-//        emailQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//
-//                    Log.i(TAG, "onDataChange: yes");
-//                    // Email already exists;
-//
-//                } else {
-//                    Log.i(TAG, "onDataChange:  + no ");
-////                    UserDto userDto = new UserDto(nameStr, emailStr, passwordStr);
-////                    fireBasereference.child(emailStr.replace(".", ",")).setValue(userDto)
-////                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-////                                @Override
-////                                public void onComplete(@androidx.annotation.NonNull Task<Void> task) {
-////                                    if (task.isSuccessful()) {
-////                                        Snackbar snackbar = Snackbar.make(v, "Sign in successfully", Snackbar.LENGTH_LONG);
-////                                        snackbar.show();
-////                                        Navigation.findNavController(v).navigate(R.id.action_signUpFragment_to_signIn2);
-////                                    } else {
-////                                        Snackbar snackbar = Snackbar.make(v, task.getException().getMessage(), Snackbar.LENGTH_LONG);
-////                                        snackbar.show();
-////                                    }
-////                                }
-////                            });
-////
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Snackbar snackbar = Snackbar.make(v, "Check your connection: ", Snackbar.LENGTH_LONG);
-//                snackbar.show();
-//            }
-//        });
 
 

@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +46,7 @@ import java.util.List;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+import androidx.activity.OnBackPressedCallback;
 
 public class MealDetails extends Fragment implements IMealDetailsView {
     public MealDetails() {
@@ -71,28 +74,33 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         meal.setIdMeal("52968");
         meal.setStrMeal("Mbuzi Choma (Roasted Goat)");
         meal.setStrCategory("Goat");
-        meal.setStrArea("Kenyan");
         meal.setStrInstructions("Roast meat over medium heat for 50 minutes...");
         meal.setStrIngredient1("Goat Meat");
-        meal.setStrIngredient2("Corn Flour");
-        meal.setStrIngredient3("Tomatoes");
-        meal.setStrIngredient4("Salt");
-        meal.setStrIngredient5("Onion");
-        meal.setStrIngredient6("Green Chilli");
         meal.setStrIngredient7("Coriander Leaves");
         meal.setStrMeasure1("1 kg");
-        meal.setStrMeasure2("1 kg");
-        meal.setStrMeasure3("2");
-        meal.setStrMeasure4("Pinch");
-        meal.setStrMeasure5("1");
-        meal.setStrMeasure6("1");
         meal.setStrMeasure7("1 bunch");
         GloblaMealList.add(meal);
-
     }
 
     private static final String TAG = "MealDetails";
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Handle back button press
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                NavController navController = Navigation.findNavController(requireView());
+
+                // Navigate back to the home fragment
+                navController.navigate(R.id.homeContentFragment);
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,30 +127,6 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         favoriteBtn = view.findViewById(R.id.FavoriteBtn);
         mealDetailsPresentor = new MealDetailsPresentor(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
 
-
-//        mealDetailsPresentor.getMealsFromFireBase().addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<MealDto> mealsList = new ArrayList<>();
-//
-//                for (DataSnapshot mealSnapshot : snapshot.getChildren()) {
-//                    MealDto meal = mealSnapshot.getValue(MealDto.class);
-//                    if (meal != null) {
-//                        mealsList.add(meal);
-//                        mealDetailsPresentor.insertMeal(meal);
-//                        Snackbar.make(view,"Added to meals ", Snackbar.LENGTH_LONG).show();
-//                        Log.d(TAG, "Meal Found: " + meal.getIdMeal() );
-//                    }
-//                }
-//
-//                Log.d(TAG, "Total Calendar Entries Found: " + mealsList.size());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e(TAG, "Error: " + error.getMessage());
-//            }
-//        });
 
 
         MaterialButton addToCalenderBtn = view.findViewById(R.id.addToCalenderBtn);
@@ -207,6 +191,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
 
         });
     }
+
 
 
     public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {

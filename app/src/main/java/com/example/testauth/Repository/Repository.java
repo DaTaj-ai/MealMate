@@ -1,5 +1,6 @@
 package com.example.testauth.Repository;
 
+import com.example.testauth.Models.ListMealDto;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
 import com.example.testauth.Repository.datasources.MealLocalDataSource;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Observable;
 
 public interface Repository {
 
@@ -25,4 +27,15 @@ public interface Repository {
     // Fire Base
     public DatabaseReference getMealsFromFireBase() ;
     public DatabaseReference getCalenderFromFireBase();
+
+
+    /*
+    ----------------------------------------------------------------------
+    $$$$$$$$$$$$$$           Filters  functions           $$$$$$$$$$$$$$$$$
+    ----------------------------------------------------------------------
+     */
+
+    public Observable<ListMealDto> filterByArea(String areaType);
+    public Observable<ListMealDto> filterByIngredients(String ingredientType);
+    public Observable<ListMealDto> filterByCategory(String categoryType);
 }

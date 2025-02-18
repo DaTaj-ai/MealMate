@@ -60,40 +60,6 @@ public class RepositoryImpl implements Repository {
         return localDataSourceMeal.getAllLocalMeals();
     }
 
-    public Observable<ListMealDto> getRemoteMeals(String query) {
-            return remoteDataSourceMeal.getMeals(query);
-    }
-
-
-/*
------------------------------------------------------------------------
-  $$$$$$$$$$$$$$           Remote functions           $$$$$$$$$$$$$$$$$
------------------------------------------------------------------------
-                                                                    */
-
-    public Observable<ListCategoryDto> getAllCategories() {
-        return remoteDataSourceMeal.getAllCategories();
-    }
-
-    public Observable<ListAreaDto> getAllAreas() {
-        return remoteDataSourceMeal.getAllAreas();
-    }
-
-    public Observable<ListIngredientDto> getAllIngredients() {
-        return remoteDataSourceMeal.getAllIngredients();
-    }
-
-    public Observable<ListMealDto> filterByArea(String areaType) {
-        return remoteDataSourceMeal.filterByArea(areaType);
-    }
-
-    public Observable<ListMealDto> getRandomMeal() {
-        if (cachedGetRandomMeal == null) {
-            cachedGetRandomMeal = remoteDataSourceMeal.getRandomMeal();
-        }
-        return cachedGetRandomMeal;
-    }
-
 
     @Override
     public Completable insertToCalender(MealsCalenderDto mealCalenderDto) {
@@ -118,6 +84,68 @@ public class RepositoryImpl implements Repository {
     public Flowable<List<MealDto>> getMealsByIds(List<String> mealIds) {
         return localDataSourceMeal.getMealsByIds(mealIds);
     }
+
+
+
+    /*
+-----------------------------------------------------------------------
+  $$$$$$$$$$$$$$           Remote functions           $$$$$$$$$$$$$$$$$
+-----------------------------------------------------------------------
+                                                                    */
+public Observable<ListMealDto> getRemoteMeals(String query) {
+    return remoteDataSourceMeal.getMeals(query);
+}
+
+public Observable<ListMealDto> getRandomMeal() {
+        if (cachedGetRandomMeal == null) {
+            cachedGetRandomMeal = remoteDataSourceMeal.getRandomMeal();
+        }
+        return cachedGetRandomMeal;
+    }
+
+
+
+    /*
+  -----------------------------------------------------------------------
+  $$$$$$$$$$$$$$           List Functions           $$$$$$$$$$$$$$$$$
+ -----------------------------------------------------------------------
+
+
+     */
+
+    public Observable<ListCategoryDto> getAllCategories() {
+        return remoteDataSourceMeal.getAllCategories();
+    }
+
+    public Observable<ListAreaDto> getAllAreas() {
+        return remoteDataSourceMeal.getAllAreas();
+    }
+
+    public Observable<ListIngredientDto> getAllIngredients() {
+        return remoteDataSourceMeal.getAllIngredients();
+    }
+
+    /*
+ -----------------------------------------------------------------------
+  $$$$$$$$$$$$$$           Filters Functions           $$$$$$$$$$$$$$$$$
+ -----------------------------------------------------------------------
+                                                                    */
+
+    public Observable<ListMealDto> filterByArea(String areaType) {
+        return remoteDataSourceMeal.filterByArea(areaType);
+    }
+    public Observable<ListMealDto> filterByIngredients(String ingredientType) {
+        return remoteDataSourceMeal.filterByIngredients(ingredientType);
+    }
+
+    public Observable<ListMealDto> filterByCategory(String categoryType) {
+        return remoteDataSourceMeal.filterByCategory(categoryType);
+    }
+
+
+
+
+
 
     /*
     ----------------------------------------------------------------------

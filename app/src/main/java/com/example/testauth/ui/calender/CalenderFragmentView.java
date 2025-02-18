@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,12 +22,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.testauth.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
+import com.example.testauth.ui.search.SearchFragmentDirections;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -118,30 +121,6 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
         });
 
 
-//        // insert meals first
-//        calenderFragmentPresenter.getMealsFromFireBase().addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<MealDto> mealsList = new ArrayList<>();
-//
-//                for (DataSnapshot mealSnapshot : snapshot.getChildren()) {
-//                    MealDto meal = mealSnapshot.getValue(MealDto.class);
-//                    if (meal != null) {
-//                        mealsList.add(meal);
-//                        calenderFragmentPresenter.insertMeal(meal);
-//                        Snackbar.make(view,"Added to meals ", Snackbar.LENGTH_SHORT).show();
-//                        Log.d(TAG, "Meal Found: " + meal.getIdMeal() );
-//                    }
-//                }
-//
-//                Log.d(TAG, "Total Calendar Entries Found: " + mealsList.size());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e(TAG, "Error: " + error.getMessage());
-//            }
-//        });
 
         BackUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,30 +173,6 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
                     }
                 });
 
-//                calenderFragmentPresenter.getCalenderFromFireBase().addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        List<MealsCalenderDto> calendarList = new ArrayList<>();
-//
-//                        for (DataSnapshot mealSnapshot : snapshot.getChildren()) {
-//                            MealsCalenderDto meal = mealSnapshot.getValue(MealsCalenderDto.class);
-//                            if (meal != null) {
-//                                calendarList.add(meal);
-//                                calenderFragmentPresenter.insertToCalender(meal);
-//                                Log.d(TAG, "Meal Found: " + meal.getMealId() + meal.getDate());
-//                            }
-//                        }
-//
-//                        Snackbar.make(view, "Total Calendar Entries Found: " + calendarList.size(), Snackbar.LENGTH_LONG).show();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        Log.e(TAG, "Error: " + error.getMessage());
-//                    }
-//                });
-
-
             }
         });
 
@@ -248,7 +203,19 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
         public void onBindViewHolder(@NonNull MyCalenderAdapter.ViewHolder holder, int position) {
             holder.nameTxt.setText(MealDtoList.get(position).getStrMeal());
             Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
-        }
+            holder.locationTxt.setText(MealDtoList.get(position).getStrArea());
+            holder.categoryTxt.setText(MealDtoList.get(position).getStrCategory());
+            Glide.with(context).load(CountryFlag.getFlagUrl(MealDtoList.get(position).getStrArea())). into(holder.flagImage);
+            holder.image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CalenderFragmentViewDirections.ActionCalenderFragmentToMealDetails action = CalenderFragmentViewDirections.actionCalenderFragmentToMealDetails(MealDtoList.get(position));
+                    Log.i(TAG, "onClick: " + MealDtoList.get(position).getStrMeal());
+                    Navigation.findNavController(view).navigate(action);
+                }
+            });
+
+         }
 
         @Override
         public int getItemCount() {
@@ -265,6 +232,9 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
             View layout;
             TextView nameTxt;
             ImageView image;
+            ImageView flagImage;
+            TextView categoryTxt;
+            TextView locationTxt;
 
 
             public ViewHolder(@NonNull View itemView) {
@@ -272,7 +242,10 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
                 layout = itemView;
                 nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
                 image = layout.findViewById(R.id.inspirationCardImage);
-                ;
+                flagImage = layout.findViewById(R.id.flagImage);
+                categoryTxt = layout.findViewById(R.id.categoryCard);
+                locationTxt = layout.findViewById(R.id.varLocation);
+
             }
         }
 

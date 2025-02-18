@@ -1,7 +1,5 @@
 package com.example.testauth.ui.Home;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -27,10 +25,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
+import com.example.testauth.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
@@ -52,10 +50,11 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
     MyAdapter myAdapter;
     ChipGroup CategoryChipGroup, ingredientsChipGroup, areaChipGroup;
 
-    ImageView imageView;
-    TextView textView;
+    ImageView InspricationCardImage , inspirationFlag;
+    TextView mealNameInspiration, locationInspiration;
     HomeContentPresenter presenter ;
     LottieAnimationView lottieAnimationView;
+
     private static final String TAG = "HomeContentFragment";
 
     Boolean IS_LOADED = false;
@@ -91,10 +90,12 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
         lottieAnimationView = view.findViewById(R.id.loadingAnimaion);
 
+        locationInspiration = view.findViewById(R.id.varLocationInspiration);
+        InspricationCardImage = view.findViewById(R.id.inspirationCardImage);
+        mealNameInspiration = view.findViewById(R.id.mealNameInspirationCard);
+        inspirationFlag = view.findViewById(R.id.flagImage);
 
-        imageView = view.findViewById(R.id.inspirationCardImage);
-        textView = view.findViewById(R.id.mealNameInspirationCard);
-        imageView.setOnClickListener(new View.OnClickListener() {
+        InspricationCardImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 HomeContentFragmentDirections.ActionHomeContentFragmentToMealDetails action = HomeContentFragmentDirections.actionHomeContentFragmentToMealDetails(GlobalinspirationMealDto);
@@ -174,7 +175,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
             Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
             holder.location.setText(MealDtoList.get(position).getStrArea());
             holder.category.setText(MealDtoList.get(position).getStrCategory());
-
+            Glide.with(context).load(CountryFlag.getFlagUrl(MealDtoList.get(position).getStrArea())).placeholder(R.drawable.ic_launcher_foreground).into(holder.flagImage);
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -183,6 +184,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
                     Navigation.findNavController(view).navigate(action);
                 }
             });
+
         }
 
         @Override
@@ -200,6 +202,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
             View layout;
             TextView nameTxt, location, category;
             ImageView image;
+            ImageView flagImage;
 
 
             public ViewHolder(@NonNull View itemView) {
@@ -209,6 +212,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
                 image = layout.findViewById(R.id.inspirationCardImage);
                 location = layout.findViewById(R.id.varLocation);
                 category = layout.findViewById(R.id.categoryCard);
+                flagImage = layout.findViewById(R.id.flagImage);
 
 
             }
@@ -243,9 +247,10 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
     @Override
     public void showInspricarionMeal(MealDto mealDto) {
         GlobalinspirationMealDto = mealDto;
-        Glide.with(getContext()).load(mealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(imageView);
-        textView.setText(mealDto.getStrMeal());
-
+        Glide.with(getContext()).load(mealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(InspricationCardImage);
+        mealNameInspiration.setText(mealDto.getStrMeal());
+        Glide.with(getContext()).load(CountryFlag.getFlagUrl(mealDto.getStrArea())).placeholder(R.drawable.ic_launcher_foreground).into(inspirationFlag);
+        locationInspiration.setText(mealDto.getStrMeal());
     }
 
     @Override

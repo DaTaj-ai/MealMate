@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,11 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.testauth.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
+import com.example.testauth.ui.search.SearchFragmentDirections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +98,18 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
         public void onBindViewHolder(@NonNull MyFavoriteAdapter.ViewHolder holder, int position) {
             holder.nameTxt.setText(MealDtoList.get(position).getStrMeal());
             Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
+            holder.countryTxt.setText(MealDtoList.get(position).getStrArea());
+            holder.categoryTxt.setText(MealDtoList.get(position).getStrCategory());
+            Glide.with(context).load(CountryFlag.getFlagUrl(MealDtoList.get(position).getStrArea())). into(holder.flagFavorite);
+            holder.image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FavoriteFragmentDirections.ActionFavoriteFragmentToMealDetails action = FavoriteFragmentDirections.actionFavoriteFragmentToMealDetails(MealDtoList.get(position));
+                    Log.i(TAG, "onClick: " + MealDtoList.get(position).getStrMeal());
+                    Navigation.findNavController(view).navigate(action);
+                }
+            });
+
         }
 
         @Override
@@ -111,7 +126,8 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
             ConstraintLayout constraintLayout;
             View layout;
             TextView nameTxt;
-            ImageView image;
+            ImageView image, flagFavorite;
+            TextView countryTxt, categoryTxt;
 
 
             public ViewHolder(@NonNull View itemView) {
@@ -119,7 +135,10 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
                 layout = itemView;
                 nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
                 image = layout.findViewById(R.id.inspirationCardImage);
-                ;
+                flagFavorite = layout.findViewById(R.id.flagImage);
+                countryTxt = layout.findViewById(R.id.varLocation) ;
+                categoryTxt = layout.findViewById(R.id.categoryCard);
+
             }
         }
 

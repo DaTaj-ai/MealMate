@@ -50,26 +50,12 @@ public class SearchFragmentPresenter {
     public Observable<ListMealDto> filterByArea(String areaType){
         return repo.filterByArea(areaType);
     }
-
-
-//    Disposable disposable = searchQueryObservable
-//            .debounce(300, TimeUnit.MILLISECONDS)
-//            .distinctUntilChanged()
-//            .switchMap(query ->
-//                    presenter.searchMeals(query)
-//                            .flatMapIterable(ListMealDto::getMeals)
-//                            .filter(meal -> matchesSearchQuery(meal, query.toLowerCase()))
-//                            .toList()
-//                            .toObservable()
-//            )
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(
-//                    filteredMeals -> {
-//                        mySearchAdapter.notifyItemChanged(filteredMeals);
-//                        mySearchAdapter.notifyDataSetChanged();
-//                    },
-//                    error -> Toast.makeText(getContext(), "Search failed: " + error.getMessage(), Toast.LENGTH_SHORT).show()
-//            );
+    public Observable<ListMealDto> filterByCategory(String categoryType){
+        return repo.filterByCategory(categoryType);
+    }
+    public Observable<ListMealDto> filterByIngredient(String ingredientType) {
+        return repo.filterByIngredients(ingredientType);
+    }
 
 
     public void setSearchQueryObservable(Observable<String> searchQueryObservable) {

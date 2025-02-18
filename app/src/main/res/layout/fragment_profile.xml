@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backGroundPages"
-    tools:context=".ProfileFragment">
+    tools:context=".ui.profile.ProfileFragment">
 
     <View
         android:id="@+id/view"
@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/poppinsregular"
+        android:fontFamily="@font/poppinsblack"
         android:text="Profile"
         android:textColor="@color/MyBlack"
         android:textSize="35sp"
@@ -112,22 +112,21 @@
         android:layout_marginTop="16dp" />
 
     <!-- Logout Button -->
-    <com.google.android.material.button.MaterialButton
+    <TextView
         android:id="@+id/logoutBackupBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lidght_gray"
         android:elevation="50dp"
         android:text="Logout"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="60dp"
         android:textColor="@color/logout"
-        app:cornerRadius="10sp"
-        app:icon="@drawable/logout"
         app:iconTint="@color/logout"
-        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        android:layout_marginBottom="70dp"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/downloadBackupBtn"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="663dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

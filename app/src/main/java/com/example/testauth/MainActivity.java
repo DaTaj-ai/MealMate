@@ -1,20 +1,14 @@
 package com.example.testauth;
 
 import android.os.Bundle;
-import android.view.Menu;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 import com.example.testauth.databinding.ActivityMainBinding;
-import com.example.testauth.ui.SplashFragment;
 
 
 public class MainActivity extends AppCompatActivity {

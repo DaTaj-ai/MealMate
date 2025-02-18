@@ -14,12 +14,9 @@
 
     <fragment
         android:id="@+id/home2"
-        android:name="com.example.testauth.ui.GoogleSignin"
+        android:name="com.example.testauth.ui.authentication.signin.GoogleSignin"
         android:label="fragment_home2"
         tools:layout="@layout/fragment_google_signin" >
-        <action
-            android:id="@+id/action_home2_to_RHomeFragment"
-            app:destination="@id/RHomeFragment" />
         <action
             android:id="@+id/action_home2_to_homeFragment"
             app:destination="@id/homeFragment" />
@@ -29,7 +26,7 @@
     </fragment>
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.testauth.ui.SplashFragment"
+        android:name="com.example.testauth.ui.splash.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash"
         android:noHistory="true">
@@ -46,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/signIn2"
-        android:name="com.example.testauth.ui.signin.SignIn"
+        android:name="com.example.testauth.ui.authentication.signin.SignIn"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in" >
         <action
@@ -71,7 +68,7 @@
         android:label="FavoriteFragment" />
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.testauth.SignUpFragment"
+        android:name="com.example.testauth.ui.authentication.signup.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" >
         <action

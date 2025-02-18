@@ -6,7 +6,7 @@
     android:backgroundTint="@color/PrimaryColor"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:scaleType="centerCrop"
-    tools:context=".ui.SplashFragment">
+    tools:context=".ui.splash.SplashFragment">
 
 
     <com.airbnb.lottie.LottieAnimationView

@@ -1,4 +1,4 @@
-package com.example.testauth.ui.signin;
+package com.example.testauth.ui.authentication.signin;
 
 import static android.app.Activity.RESULT_OK;
 
