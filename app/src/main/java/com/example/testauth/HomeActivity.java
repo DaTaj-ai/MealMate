@@ -12,7 +12,6 @@ public class HomeActivity extends AppCompatActivity {
 
     NavController navController;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
