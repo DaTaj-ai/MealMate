@@ -61,7 +61,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     MySearchAdapter mySearchAdapter;
     SearchFragmentPresenter presenter;
     ChipGroup filteredGroup;
-
     Observable<String> searchQueryObservable;
 
     private static final String TAG = "SearchFragment";
