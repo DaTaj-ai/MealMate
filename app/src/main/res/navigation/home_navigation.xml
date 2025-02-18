@@ -33,7 +33,9 @@
         tools:layout="@layout/fragment_search" >
         <action
             android:id="@+id/action_searchFragment_to_mealDetails"
-            app:destination="@id/mealDetails" />
+            app:destination="@id/mealDetails"
+            app:popUpTo="@id/searchFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/homeContentFragment"

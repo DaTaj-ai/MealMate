@@ -2,6 +2,7 @@ package com.example.testauth.ui.mailditails;
 
 import android.util.Log;
 
+import com.example.testauth.Models.ListMealDto;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
 import com.example.testauth.Repository.Repository;
@@ -24,13 +25,13 @@ public class MealDetailsPresentor {
         this.repository = repository;
     }
 
-    public void insertMeal(MealDto mealDto) {
-        repository.insertLocal(mealDto).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(()->view.showSnackBar("Meal Added to Favorite Successfully")).subscribe();
+    public Completable insertMeal(MealDto mealDto) {
+        return repository.insertLocal(mealDto).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public void deleteMeal(MealDto mealDto) {
-        repository.deleteLocal(mealDto);
+        repository.deleteLocal(mealDto).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
     public void insertToCalender(MealsCalenderDto mealCalenderDto){
            repository.insertToCalender(mealCalenderDto)
@@ -44,7 +45,7 @@ public class MealDetailsPresentor {
         repository.insertMealToFireBase(mealDto);
     }
     public void insertClendertoFireBase(MealsCalenderDto mealsCalenderDto){
-        repository.insertCalenderFireBase(mealsCalenderDto);
+         repository.insertCalenderFireBase(mealsCalenderDto);
     }
 
 

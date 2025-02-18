@@ -3,6 +3,8 @@ package com.example.testauth.ui.search;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,33 +23,26 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.testauth.CountryFlag;
-import com.example.testauth.Models.CategoryDto;
+import com.example.testauth.helper.CountryFlag;
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
 import com.example.testauth.Models.ListIngredientDto;
-import com.example.testauth.Models.ListMealDto;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
-import com.example.testauth.ui.Home.HomeContentFragmentDirections;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -66,6 +61,8 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     MySearchAdapter mySearchAdapter;
     SearchFragmentPresenter presenter;
     ChipGroup filteredGroup;
+
+    Observable<String> searchQueryObservable;
 
     private static final String TAG = "SearchFragment";
 
@@ -89,16 +86,16 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        presenter = new SearchFragmentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
-        // get  meals
-        Disposable mealsObservable = presenter.searchMeals("").doOnNext(mealDtoList -> {
-            GloblaMealList = mealDtoList.getMeals();
-            mySearchAdapter.notifyItemChanged(GloblaMealList);
-            mySearchAdapter.notifyDataSetChanged();
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+        if(isNetworkConnected()){
+            presenter = new SearchFragmentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
+            // get  meals
+            Disposable mealsObservable = presenter.searchMeals("").doOnNext(mealDtoList -> {
+                GloblaMealList = mealDtoList.getMeals();
+                mySearchAdapter.notifyItemChanged(GloblaMealList);
+                mySearchAdapter.notifyDataSetChanged();
+            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+        }
     }
-
-    Observable<String> searchQueryObservable;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -108,137 +105,140 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
         filteredGroup = view.findViewById(R.id.filterCategoryCard);
 
-        filterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetDialog = new BottomSheetDialog(getActivity());
-                View bottomSheetView = LayoutInflater.from(getActivity())
-                        .inflate(R.layout.bottom_sheet_filter, null);
-
-                countryGroup = bottomSheetView.findViewById(R.id.countryChipGroup);
-                ChipGroup ingredientsGroup = bottomSheetView.findViewById(R.id.ingredientsChipGroup);
-                ChipGroup categoryGroup = bottomSheetView.findViewById(R.id.categoryCard);
-
-                //Categoty
-                Observable<ListCategoryDto> listCategoryDtoObservable = presenter.getAllCategories();
-                Observer listCategotyDtoObserver = new Observer<ListCategoryDto>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.i(TAG, "onSubscribe: ");
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListCategoryDto listCategoryDto) {
-                        if (categoryGroup != null && listCategoryDto != null) {
-                            populateChipGroup(categoryGroup, listCategoryDto.toList());
-                        }
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                };
-                listCategoryDtoObservable.subscribe(listCategotyDtoObserver);
-
-
-                // Areas
-                Observable<ListAreaDto> listAreaDtoObservable = presenter.getAllAreas();
-                Observer listAreaDtoObserver = new Observer<ListAreaDto>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.i(TAG, "onSubscribe: ");
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListAreaDto listAreaDto) {
-                        Log.i(TAG, "Area onNext: " + listAreaDto.getAreaDtoList().size());
-                        if (countryGroup != null && listAreaDto != null) {
-                            populateChipGroupCountry(countryGroup, listAreaDto.toList());
-                        }
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.i(TAG, "onError: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                };
-                listAreaDtoObservable.subscribe(listAreaDtoObserver);
-
-                // ingredients
-                Observable<ListIngredientDto> listIngrdienDtoObservable = presenter.getAllIngredients();
-                Observer listIngrdienDtoObserver = new Observer<ListIngredientDto>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-                        Log.i(TAG, "onSubscribe: ");
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListIngredientDto listIngredientDto) {
-                        if (ingredientsGroup != null && listIngredientDto != null) {
-                            populateChipGroupIngredient(ingredientsGroup, listIngredientDto.toList());
-                        }
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        Log.i(TAG, "onError: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                };
-                listIngrdienDtoObservable.subscribe(listIngrdienDtoObserver);
-
-
-                bottomSheetDialog.setContentView(bottomSheetView);
-                bottomSheetDialog.show();
-            }
-        });
-
-        searchQueryObservable = Observable.create(emitter -> {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        if(isNetworkConnected() ) {
+            filterBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
-                }
+                public void onClick(View view) {
+                    bottomSheetDialog = new BottomSheetDialog(getActivity());
+                    View bottomSheetView = LayoutInflater.from(getActivity())
+                            .inflate(R.layout.bottom_sheet_filter, null);
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    emitter.onNext(newText);
-                    if (newText.equals(" ") || newText.equals("")) {
-                        showMeals(GloblaMealList);
-                    } else {
-                        Log.i(TAG, "onQueryTextChange: " + GloblaMealList.size());
-                    }
-                    return false;
+                    countryGroup = bottomSheetView.findViewById(R.id.countryChipGroup);
+                    ChipGroup ingredientsGroup = bottomSheetView.findViewById(R.id.ingredientsChipGroup);
+                    ChipGroup categoryGroup = bottomSheetView.findViewById(R.id.categoryCard);
+
+                    //Categoty
+                    Observable<ListCategoryDto> listCategoryDtoObservable = presenter.getAllCategories();
+                    Observer listCategotyDtoObserver = new Observer<ListCategoryDto>() {
+                        @Override
+                        public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                            Log.i(TAG, "onSubscribe: ");
+                        }
+
+                        @Override
+                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListCategoryDto listCategoryDto) {
+                            if (categoryGroup != null && listCategoryDto != null) {
+                                populateChipGroup(categoryGroup, listCategoryDto.toList());
+                            }
+                        }
+
+                        @Override
+                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    };
+                    listCategoryDtoObservable.subscribe(listCategotyDtoObserver);
+
+
+                    // Areas
+                    Observable<ListAreaDto> listAreaDtoObservable = presenter.getAllAreas();
+                    Observer listAreaDtoObserver = new Observer<ListAreaDto>() {
+                        @Override
+                        public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                            Log.i(TAG, "onSubscribe: ");
+                        }
+
+                        @Override
+                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListAreaDto listAreaDto) {
+                            Log.i(TAG, "Area onNext: " + listAreaDto.getAreaDtoList().size());
+                            if (countryGroup != null && listAreaDto != null) {
+                                populateChipGroupCountry(countryGroup, listAreaDto.toList());
+                            }
+                        }
+
+                        @Override
+                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                            Log.i(TAG, "onError: " + e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    };
+                    listAreaDtoObservable.subscribe(listAreaDtoObserver);
+
+                    // ingredients
+                    Observable<ListIngredientDto> listIngrdienDtoObservable = presenter.getAllIngredients();
+                    Observer listIngrdienDtoObserver = new Observer<ListIngredientDto>() {
+                        @Override
+                        public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                            Log.i(TAG, "onSubscribe: ");
+                        }
+
+                        @Override
+                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListIngredientDto listIngredientDto) {
+                            if (ingredientsGroup != null && listIngredientDto != null) {
+                                populateChipGroupIngredient(ingredientsGroup, listIngredientDto.toList());
+                            }
+                        }
+
+                        @Override
+                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                            Log.i(TAG, "onError: " + e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    };
+                    listIngrdienDtoObservable.subscribe(listIngrdienDtoObserver);
+
+
+                    bottomSheetDialog.setContentView(bottomSheetView);
+                    bottomSheetDialog.show();
                 }
             });
-            emitter.setCancellable(() -> searchView.setOnQueryTextListener(null));
-        });
+            searchQueryObservable = Observable.create(emitter -> {
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
 
-        presenter.setSearchQueryObservable(searchQueryObservable);
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        emitter.onNext(newText);
+                        if (newText.equals(" ") || newText.equals("")) {
+                            showMeals(GloblaMealList);
+                        } else {
+                            Log.i(TAG, "onQueryTextChange: " + GloblaMealList.size());
+                        }
+                        return false;
+                    }
+                });
+                emitter.setCancellable(() -> searchView.setOnQueryTextListener(null));
+            });
+            presenter.setSearchQueryObservable(searchQueryObservable);
 
+            mySearchAdapter = new MySearchAdapter(getContext(), GloblaMealList);
+            recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewSearch);
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+            linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setAdapter(mySearchAdapter);
 
-        mySearchAdapter = new MySearchAdapter(getContext(), GloblaMealList);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewSearch);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(mySearchAdapter);
+        }
+        else {
+            Snackbar.make(getView(), "No internet", Snackbar.LENGTH_LONG);
+        }
 
     }
 
@@ -278,6 +278,11 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
         }
     }
 
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
 
     @SuppressLint("ResourceAsColor")
     private void populateChipGroupCountry(ChipGroup chipGroup, List<String> items) {
@@ -288,7 +293,22 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             chip.setTextAppearance(R.style.ChipTextStyle);
             chip.setCheckable(true);
             chip.setCheckedIcon(null);
-            //chip.setChipBackgroundColorResource(R.color.PrimaryColor); // Default background color
+            Glide.with(getContext())
+                    .asDrawable()
+                    .load(CountryFlag.getFlagUrl(item))
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .into(new CustomTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            chip.setChipIcon(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            chip.setChipIcon(placeholder);
+                        }
+                    });
+
             chip.setText(item);
 
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -425,7 +445,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 @Override
                 public void onClick(View view) {
                     SearchFragmentDirections.ActionSearchFragmentToMealDetails action = SearchFragmentDirections.actionSearchFragmentToMealDetails(MealDtoList.get(position));
-                    Log.i(TAG, "onClick: " + MealDtoList.get(position).getStrMeal());
                     Navigation.findNavController(view).navigate(action);
                 }
             });
@@ -457,7 +476,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                 layout = itemView;
                 nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
                 image = layout.findViewById(R.id.inspirationCardImage);
-                flagImage = layout.findViewById(R.id.flagImage);
+                flagImage = layout.findViewById(R.id.flagImageMealDetails);
                 categoryTxt = layout.findViewById(R.id.categoryCard);
                 locationTxt = layout.findViewById(R.id.varLocation);
 
@@ -467,119 +486,4 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     }
 }
 
-
-// get Categoty
-//        Observable<ListCategoryDto> listCategoryDtoObservable = presenter.getAllCategories();
-//        Observer listCategotyDtoObserver = new Observer<ListCategoryDto>() {
-//            @Override
-//            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-//                Log.i(TAG, "onSubscribe: ");
-//            }
-//
-//            @Override
-//            public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListCategoryDto listCategoryDto) {
-//                for(CategoryDto cat : listCategoryDto.getCategoryDtoList() ){
-//                    Log.i(TAG, "CategoryDto list onNext: " + cat.getStrCategory() );
-//                }
-//                if(countryGroup != null && listCategoryDto != null){
-//                    populateChipGroup(countryGroup, listCategoryDto.toList());
-//                }
-//
-//
-//                Log.i(TAG, " ListonNext : " + listCategoryDto.getCategoryDtoList().size());
-//            }
-//
-//            @Override
-//            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-//
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        };
-//        listCategoryDtoObservable.subscribe(listCategotyDtoObserver);
-
-
-//get Areas
-//        Observable<ListAreaDto> listAreaDtoObservable = presenter.getAllAreas();
-//        Observer listAreaDtoObserver = new Observer<ListAreaDto>() {
-//            @Override
-//            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-//                Log.i(TAG, "onSubscribe: ");
-//            }
-//
-//            @Override
-//            public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListAreaDto listAreaDto) {
-//                Log.i(TAG, "Area onNext: " + listAreaDto.getAreaDtoList().size());
-//            }
-//
-//            @Override
-//            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-//                Log.i(TAG, "onError: " + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        };
-//        listAreaDtoObservable.subscribe(listAreaDtoObserver);
-
-//        get ingrdeand
-//        Observable<ListIngredientDto> listIngrdienDtoObservable = presenter.getAllIngredients();
-//        Observer listIngrdienDtoObserver = new Observer<ListIngredientDto>() {
-//            @Override
-//            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
-//                Log.i(TAG, "onSubscribe: ");
-//            }
-//
-//            @Override
-//            public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListIngredientDto listAreaDto) {
-//                Log.i(TAG, "Area onNext: " + listAreaDto.getIngredientDtoList().size());
-//            }
-//
-//            @Override
-//            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-//                Log.i(TAG, "onError: " + e.getMessage());
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        };
-//        listIngrdienDtoObservable.subscribe(listIngrdienDtoObserver);
-
-
-//        filterBtn = view.findViewById(R.id.filterBtn);
-//        filterBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                bottomSheetDialog = new BottomSheetDialog(getActivity());
-//                View bottomSheetView = LayoutInflater.from(getActivity()).inflate(R.layout.bottom_sheet_filter, null);
-//                bottomSheetDialog.setContentView(bottomSheetView);
-//                bottomSheetDialog.show();
-//            }
-//        });
-
-//        Disposable disposable = searchQueryObservable
-//                .debounce(300, TimeUnit.MILLISECONDS) // Wait 300ms after user stops typing
-//                .distinctUntilChanged() // Skip duplicate consecutive queries
-//                .switchMap(query ->
-//                        mealsObservable
-//                                .flatMapIterable(ListMealDto::getMeals) // Convert List to Observable<MealDto>
-//                                .filter(meal -> meal.getStrMeal().toLowerCase().contains(query.toLowerCase()))
-//                                .toList()
-//                                .toObservable()
-//                )
-//                .observeOn(AndroidSchedulers.mainThread()) // Ensure UI updates on the main thread
-//                .subscribe(
-//                        filteredMeals -> {
-//                            mySearchAdapter.notifyItemChanged(filteredMeals);
-//                            mySearchAdapter.notifyDataSetChanged();
-//                        }
-//                        ,
-//                        error -> Toast.makeText(getContext(), "Search failed: " + error.getMessage(), Toast.LENGTH_SHORT).show()
-//                );
+;

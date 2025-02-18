@@ -1,10 +1,12 @@
 package com.example.testauth.ui.Favorites;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.utils.widget.MotionButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -15,17 +17,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.testauth.CountryFlag;
+import com.example.testauth.helper.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
-import com.example.testauth.ui.search.SearchFragmentDirections;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,7 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
     List<MealDto> GloblaMealList = new ArrayList<>();
     RecyclerView recyclerView;
     MyFavoriteAdapter myFavoriteAdapter;
+
     FavoriteFragmentPresentor favoriteFragmentPresentor;
     private static final String TAG = "HomeContentFragment";
 
@@ -62,9 +66,11 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         favoriteFragmentPresentor = new FavoriteFragmentPresentor(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
         favoriteFragmentPresentor.getAllFavorites();
+
+
+
         myFavoriteAdapter = new MyFavoriteAdapter(getContext(), GloblaMealList);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewFavorite);
         recyclerView.setHasFixedSize(true);
@@ -110,6 +116,22 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
                 }
             });
 
+            holder.deleteFromFavoriteBtn.setVisibility(View.VISIBLE);
+            holder.deleteFromFavoriteBtn.setBackgroundResource(R.drawable.delete);
+            holder.deleteFromFavoriteBtn.setOnClickListener(v -> {
+            ObjectAnimator animator = ObjectAnimator.ofFloat(v, "translationX", 0f, 100f);
+            animator.setDuration(500);
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+            animator.start();
+            Snackbar.make(v, "Meal Deleted From Favorites", Snackbar.LENGTH_LONG).show();
+
+            MealDtoList.get(position).setFavorite(false);
+            favoriteFragmentPresentor.deleteMeal(MealDtoList.get(position));
+            notifyItemChanged(MealDtoList);
+            notifyDataSetChanged();
+        });
+
+
         }
 
         @Override
@@ -128,16 +150,18 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
             TextView nameTxt;
             ImageView image, flagFavorite;
             TextView countryTxt, categoryTxt;
-
+            MotionButton deleteFromFavoriteBtn ;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 layout = itemView;
                 nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
                 image = layout.findViewById(R.id.inspirationCardImage);
-                flagFavorite = layout.findViewById(R.id.flagImage);
+                flagFavorite = layout.findViewById(R.id.flagImageMealDetails);
                 countryTxt = layout.findViewById(R.id.varLocation) ;
                 categoryTxt = layout.findViewById(R.id.categoryCard);
+                deleteFromFavoriteBtn = layout.findViewById(R.id.add_removeImageFavorites);
+
 
             }
         }

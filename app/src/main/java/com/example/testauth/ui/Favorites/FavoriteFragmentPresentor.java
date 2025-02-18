@@ -23,4 +23,8 @@ public class FavoriteFragmentPresentor {
     public void getAllFavorites() {
         repository.getAllIsFavorites().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnNext(m -> view.showdata(m)).subscribe();
     }
+
+    public void deleteMeal(MealDto mealDto) {
+        repository.insertLocal(mealDto).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+    }
 }

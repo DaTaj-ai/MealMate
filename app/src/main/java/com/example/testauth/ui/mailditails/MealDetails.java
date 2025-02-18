@@ -23,9 +23,9 @@ import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.testauth.helper.CountryFlag;
 import com.example.testauth.Models.IngredientDtoView;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
@@ -36,15 +36,8 @@ import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import androidx.activity.OnBackPressedCallback;
 
@@ -55,7 +48,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
     RecyclerView recyclerView;
     MyAdapter myAdapter;
     TextView mealName;
-    ImageView mealImage;
+    ImageView mealImage , flagImage;
     TextView mealDescription;
     TextView location;
     ImageButton favoriteBtn;
@@ -65,21 +58,6 @@ public class MealDetails extends Fragment implements IMealDetailsView {
     @Override
     public void showSnackBar(String message) {
         Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG).show();
-    }
-
-    List<MealDto> GloblaMealList = new ArrayList<>();
-
-    {
-        MealDto meal = new MealDto();
-        meal.setIdMeal("52968");
-        meal.setStrMeal("Mbuzi Choma (Roasted Goat)");
-        meal.setStrCategory("Goat");
-        meal.setStrInstructions("Roast meat over medium heat for 50 minutes...");
-        meal.setStrIngredient1("Goat Meat");
-        meal.setStrIngredient7("Coriander Leaves");
-        meal.setStrMeasure1("1 kg");
-        meal.setStrMeasure7("1 bunch");
-        GloblaMealList.add(meal);
     }
 
     private static final String TAG = "MealDetails";
@@ -93,9 +71,8 @@ public class MealDetails extends Fragment implements IMealDetailsView {
             @Override
             public void handleOnBackPressed() {
                 NavController navController = Navigation.findNavController(requireView());
-
-                // Navigate back to the home fragment
-                navController.navigate(R.id.homeContentFragment);
+                Navigation.findNavController(requireView()).popBackStack();
+                //navController.navigate(R.id.homeContentFragment);
             }
         };
 
@@ -106,13 +83,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.meal_details, container, false);
-        myAdapter = new MyAdapter(getContext(), GloblaMealList.get(0).getIngredientDtos());
-        recyclerView = view.findViewById(R.id.recyclerViewIngredients);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(myAdapter);
+
         return view;
     }
 
@@ -124,6 +95,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         mealImage = view.findViewById(R.id.MealImageDetails);
         mealName = view.findViewById(R.id.mealNameDetails);
         location = view.findViewById(R.id.varLocation);
+        flagImage = view.findViewById(R.id.flagImageMealDetails);
         favoriteBtn = view.findViewById(R.id.FavoriteBtn);
         mealDetailsPresentor = new MealDetailsPresentor(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
 
@@ -139,16 +111,29 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         mealDescription.setText(GlobalMealDto.getStrInstructions());
         mealName.setText(GlobalMealDto.getStrMeal());
         location.setText(GlobalMealDto.getStrArea());
-        myAdapter = new MyAdapter(getContext(), GlobalMealDto.getIngredientDtos());
+
+        myAdapter = new MyAdapter(getContext(), MealDetailsArgs.fromBundle(getArguments()).getMealto().getIngredientDtos());
+        recyclerView = view.findViewById(R.id.recyclerViewIngredients);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(myAdapter);
+
+
         Glide.with(this).load(GlobalMealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(mealImage);
+        Glide.with(this).load(CountryFlag.getFlagUrl(GlobalMealDto.getStrArea())).placeholder(R.drawable.ic_launcher_foreground).into(flagImage);
+
+        myAdapter.notifyItemChanged(MealDetailsArgs.fromBundle(getArguments()).getMealto().getIngredientDtos());
+        myAdapter.notifyDataSetChanged();
 
         WebView webView = view.findViewById(R.id.videoView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
         String videoId;
+
         if(GlobalMealDto.getStrYoutube() != null){
             videoId = getYouTubeVideoId(GlobalMealDto.getStrYoutube());
-
         }
         else {
             videoId = "";
@@ -161,12 +146,13 @@ public class MealDetails extends Fragment implements IMealDetailsView {
 
         favoriteBtn.setOnClickListener(v -> {
             GlobalMealDto.setFavorite(true);
-            mealDetailsPresentor.insertMeal(GlobalMealDto);
+            mealDetailsPresentor.insertMeal(GlobalMealDto).doOnComplete(()->showSnackBar("Meal Added to Favorite Successfully")).subscribe();
             mealDetailsPresentor.insertMealToFireBase(GlobalMealDto);
         });
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         Boolean isQuest = sharedPreferences.getBoolean("isQuest", false);
+
         if (isQuest)  {
             favoriteBtn.setEnabled(false);
             Snackbar.make(view, "welcome to Guest Mode \n Login to get full access", Snackbar.LENGTH_LONG).show();
@@ -181,14 +167,15 @@ public class MealDetails extends Fragment implements IMealDetailsView {
     void showCalender() {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker().build();
         datePicker.show(this.getParentFragmentManager(), "DATE_PICKER");
-        // Slution for Just now you have to make it pro
-        mealDetailsPresentor.insertMeal(GlobalMealDto);
+
+
+
         Log.i(TAG, "showCalender:  " + GlobalMealDto.getIdMeal());
         datePicker.addOnPositiveButtonClickListener(selection -> {
             MealsCalenderDto mealCalenderDto = new MealsCalenderDto(GlobalMealDto.getIdMeal(), datePicker.getHeaderText());
-            mealDetailsPresentor.insertToCalender(mealCalenderDto);
+            mealDetailsPresentor.insertMeal(GlobalMealDto).doOnError(e->showSnackBar(e.getMessage())).doOnComplete(()->{mealDetailsPresentor.insertToCalender(mealCalenderDto);}).subscribe();
+            mealDetailsPresentor.insertMealToFireBase(GlobalMealDto);
             mealDetailsPresentor.insertClendertoFireBase(mealCalenderDto);
-
         });
     }
 

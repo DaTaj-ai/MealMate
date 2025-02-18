@@ -10,7 +10,7 @@ import io.reactivex.rxjava3.core.Flowable;
 
 public interface MealLocalDataSource {
     public Completable insert (MealDto mealDto);
-    public void delete(MealDto mealDto);
+    public Completable delete(MealDto mealDto);
 
     Flowable<List<MealDto>> getAllLocalMeals();
 

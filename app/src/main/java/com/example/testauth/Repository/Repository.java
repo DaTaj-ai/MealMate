@@ -18,6 +18,7 @@ public interface Repository {
 
     Completable insertToCalender(MealsCalenderDto mealCalenderDto);
     public Completable insertLocal(MealDto mealDto);
+    public Completable deleteLocal(MealDto mealDto);
 
     public Flowable<List<MealDto>> getAllIsFavorites() ;
     Completable DeleteFromCalender(MealsCalenderDto mealCalenderDto);

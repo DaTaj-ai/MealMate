@@ -97,6 +97,8 @@ public class HomeContentPresenter {
             }
         });
     }
+
+    // we dont need it for now
     public void getIngrdientsList(){
         repository.getAllIngredients().subscribe(new Observer<ListIngredientDto>()
         {

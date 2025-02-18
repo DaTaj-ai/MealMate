@@ -28,7 +28,7 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
-import com.example.testauth.CountryFlag;
+import com.example.testauth.helper.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
@@ -46,8 +46,8 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
     MealDto GlobalinspirationMealDto;
     List<MealDto> GloblaMealList = new ArrayList<>();
-    RecyclerView recyclerView;
-    MyAdapter myAdapter;
+    RecyclerView recyclerView , recyclerViewArea ;
+    MyAdapter myAdapterCategoty , myAdapterArea ;
     ChipGroup CategoryChipGroup, ingredientsChipGroup, areaChipGroup;
 
     ImageView InspricationCardImage , inspirationFlag;
@@ -93,7 +93,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         locationInspiration = view.findViewById(R.id.varLocationInspiration);
         InspricationCardImage = view.findViewById(R.id.inspirationCardImage);
         mealNameInspiration = view.findViewById(R.id.mealNameInspirationCard);
-        inspirationFlag = view.findViewById(R.id.flagImage);
+        inspirationFlag = view.findViewById(R.id.flagImageMealDetails);
 
         InspricationCardImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,14 +107,24 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
 
         Log.i(TAG, "onViewCreated: ");
-        myAdapter = new MyAdapter(getContext(), GloblaMealList);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewInspirationMeal);
+        myAdapterCategoty = new MyAdapter(getContext(), GloblaMealList);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(myAdapter);
+        recyclerView.setAdapter(myAdapterCategoty);
+
+
+        myAdapterArea = new MyAdapter(getContext(), GloblaMealList);
+        recyclerViewArea = (RecyclerView) view.findViewById(R.id.recyclerViewArea);
+        recyclerViewArea.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManagerArea = new LinearLayoutManager(getContext());
+        linearLayoutManagerArea.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerViewArea.setLayoutManager(linearLayoutManagerArea);
+        recyclerViewArea.setItemAnimator(new DefaultItemAnimator());
+        recyclerViewArea.setAdapter(myAdapterArea);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         Boolean isQuest = sharedPreferences.getBoolean("isQuest", false);
@@ -134,11 +144,10 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
                 }
             } else {
                 if (isAdded() && getActivity() != null && !isDetached()) {
+                    presenter.getInspricarionMeal();
                     presenter.getMeals();
                     presenter.getCategotyList();
                     presenter.getAreasList();
-                    presenter.getIngrdientsList();
-                    presenter.getInspricarionMeal();
                 }
             }
         } else {
@@ -212,7 +221,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
                 image = layout.findViewById(R.id.inspirationCardImage);
                 location = layout.findViewById(R.id.varLocation);
                 category = layout.findViewById(R.id.categoryCard);
-                flagImage = layout.findViewById(R.id.flagImage);
+                flagImage = layout.findViewById(R.id.flagImageMealDetails);
 
 
             }
@@ -268,8 +277,12 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
     @Override
     public void showCategoryMeals(List<MealDto> meals) {
         GloblaMealList = meals;
-        myAdapter.notifyItemChanged(GloblaMealList);
-        myAdapter.notifyDataSetChanged();
+        myAdapterCategoty.notifyItemChanged(GloblaMealList);
+        myAdapterCategoty.notifyDataSetChanged();
+
+        myAdapterArea.notifyItemChanged(GloblaMealList);
+        myAdapterArea.notifyDataSetChanged();
+
     }
 
     @Override

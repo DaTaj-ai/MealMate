@@ -1,4 +1,4 @@
-package com.example.testauth.ui;
+package com.example.testauth.ui.cards;
 
 import android.os.Bundle;
 

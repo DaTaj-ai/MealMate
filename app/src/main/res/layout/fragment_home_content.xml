@@ -81,7 +81,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:src="@tools:sample/avatars" />
                 <ImageView
-                    android:id="@+id/flagImage"
+                    android:id="@+id/flagImageMealDetails"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="8dp"
@@ -152,10 +152,10 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewInspirationMeal"
+            android:id="@+id/recyclerViewCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
@@ -179,7 +179,7 @@
                 android:layout_marginTop="20dp"
                 app:chipSpacing="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerViewInspirationMeal"
+                app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory"
                 app:singleLine="true">
 
                 <com.google.android.material.chip.Chip
@@ -195,54 +195,6 @@
 
         </HorizontalScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="132dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewInspirationMeal" />
-
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollViewIngrdients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/ingredientsChipGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="20dp"
-                app:chipSpacing="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerViewInspirationMeal"
-                app:singleLine="true">
-
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:text="Ingrdients"
-                    android:textColor="@color/white"
-                    app:chipBackgroundColor="@color/PrimaryColor" />
-            </com.google.android.material.chip.ChipGroup>
-
-        </HorizontalScrollView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewIngredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/horizontalScrollViewIngrdients" />
-
         <HorizontalScrollView
             android:id="@+id/horizontalScrollViewArea"
             android:layout_width="match_parent"
@@ -251,7 +203,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewIngredients">
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/AreasChipGroup"
@@ -261,7 +213,7 @@
                 android:layout_marginTop="20dp"
                 app:chipSpacing="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-
+                app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory"
                 app:singleLine="true">
 
                 <com.google.android.material.chip.Chip
@@ -270,7 +222,8 @@
                     android:clickable="false"
                     android:text="Area"
                     android:textColor="@color/white"
-                    app:chipBackgroundColor="@color/PrimaryColor" />
+                    app:chipBackgroundColor="@color/PrimaryColor"
+                    app:chipCornerRadius="8dp"/>
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
@@ -278,7 +231,7 @@
             android:id="@+id/recyclerViewArea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontalScrollViewArea" />
 

@@ -22,14 +22,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.testauth.CountryFlag;
+import com.example.testauth.helper.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
-import com.example.testauth.ui.search.SearchFragmentDirections;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -242,7 +241,7 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
                 layout = itemView;
                 nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
                 image = layout.findViewById(R.id.inspirationCardImage);
-                flagImage = layout.findViewById(R.id.flagImage);
+                flagImage = layout.findViewById(R.id.flagImageMealDetails);
                 categoryTxt = layout.findViewById(R.id.categoryCard);
                 locationTxt = layout.findViewById(R.id.varLocation);
 

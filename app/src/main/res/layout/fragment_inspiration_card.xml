@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ui.InspirationCardFragment">
+    tools:context=".ui.cards.InspirationCardFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/inspirationCard"
@@ -57,7 +57,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/flagImage"
+                android:id="@+id/flagImageMealDetails"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="8dp"
@@ -66,6 +66,20 @@
                 app:layout_constraintBottom_toBottomOf="@+id/varLocation"
                 app:layout_constraintEnd_toStartOf="@+id/varLocation"
                 app:layout_constraintTop_toTopOf="@+id/varLocation" />
+
+
+            <androidx.constraintlayout.utils.widget.MotionButton
+                android:id="@+id/add_removeImageFavorites"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:selectAllOnFocus="true"
+                android:elevation="10dp"
+                android:visibility="gone"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/varLocation"

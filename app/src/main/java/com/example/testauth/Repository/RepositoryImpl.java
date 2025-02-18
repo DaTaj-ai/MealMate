@@ -52,8 +52,8 @@ public class RepositoryImpl implements Repository {
         return localDataSourceMeal.insert(mealDto);
     }
 
-    public void deleteLocal(MealDto mealDto) {
-        localDataSourceMeal.delete(mealDto);
+    public Completable deleteLocal(MealDto mealDto) {
+        return  localDataSourceMeal.delete(mealDto);
     }
 
     public Flowable<List<MealDto>> getAllLocal() {

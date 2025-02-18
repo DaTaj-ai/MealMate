@@ -82,27 +82,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/backupBtn"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+
+        <ImageView
+            android:id="@+id/flagImageMealDetails"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/gray_square_small"
+            android:layout_marginEnd="8dp"
             android:elevation="10dp"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mealNameDetails" />
 
-        <ImageView
-            android:id="@+id/view2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/location"
-            android:elevation="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/varLocation"
-            app:layout_constraintEnd_toEndOf="@+id/backupBtn"
-            app:layout_constraintStart_toStartOf="@+id/backupBtn"
-            app:layout_constraintTop_toTopOf="@+id/varLocation" />
+
         <TextView
             android:id="@+id/varLocation"
             android:layout_width="wrap_content"
@@ -113,7 +105,7 @@
             android:text="lcoarion "
             android:textColor="@color/naviBlue"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/backupBtn"
+            app:layout_constraintStart_toEndOf="@+id/flagImageMealDetails"
             app:layout_constraintTop_toBottomOf="@+id/mealNameDetails" />
 
         <WebView

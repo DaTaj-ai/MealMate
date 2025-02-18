@@ -43,13 +43,8 @@ public class MealLocalDataSourceImpl implements MealLocalDataSource {
     }
 
     @Override
-    public void delete(MealDto mealDto) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dao.delete(mealDto);
-            }
-        }).start();
+    public Completable delete(MealDto mealDto) {
+        return dao.delete(mealDto);
     }
 
     @Override
