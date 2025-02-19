@@ -42,6 +42,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -50,7 +51,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
     MealDto GlobalinspirationMealDto;
     List<MealDto> GloblaMealList = new ArrayList<>();
     RecyclerView recyclerViewCategory, recyclerViewArea ;
-    MyAdapter myAdapterCategoty , myAdapterArea ;
+    HomeViewAdapter myAdapterCategoty , myAdapterArea ;
     ChipGroup CategoryChipGroup, ingredientsChipGroup, areaChipGroup;
 
     ImageView InspricationCardImage , inspirationFlag;
@@ -89,10 +90,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         CategoryChipGroup = view.findViewById(R.id.categoryCard);
         ingredientsChipGroup = view.findViewById(R.id.ingredientsChipGroup);
         areaChipGroup = view.findViewById(R.id.AreasChipGroup);
-
-
         lottieAnimationView = view.findViewById(R.id.loadingAnimaion);
-
         InspricationCardImage = view.findViewById(R.id.inspirationCardImage);
         categotyInspiration = view.findViewById(R.id.categoryInspiration);
         mealNameInspiration = view.findViewById(R.id.mealNameInspirationCard);
@@ -108,9 +106,8 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         });
 
 
-
-        Log.i(TAG, "onViewCreated: ");
-        myAdapterCategoty = new MyAdapter(getContext(), GloblaMealList);
+        // Category Adapter
+        myAdapterCategoty = new HomeViewAdapter(getContext(), GloblaMealList);
         recyclerViewCategory = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
         recyclerViewCategory.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -119,8 +116,8 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         recyclerViewCategory.setItemAnimator(new DefaultItemAnimator());
         recyclerViewCategory.setAdapter(myAdapterCategoty);
 
-
-        myAdapterArea = new MyAdapter(getContext(), GloblaMealList);
+        // Area Adapter
+        myAdapterArea = new HomeViewAdapter(getContext(), GloblaMealList);
         recyclerViewArea = (RecyclerView) view.findViewById(R.id.recyclerViewArea);
         recyclerViewArea.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManagerArea = new LinearLayoutManager(getContext());
@@ -132,23 +129,22 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         Boolean isQuest = sharedPreferences.getBoolean("isQuest", false);
 
-
-
         if (isNetworkConnected()) {
             Snackbar.make(getView(), "internet", Snackbar.LENGTH_LONG);
 
             Log.i(TAG, "onViewCreated: " + isQuest);
             if (isQuest) {
-                recyclerViewCategory.setVisibility(View.GONE);
+//                recyclerViewCategory.setVisibility(View.GONE);
                 if (isAdded() && getActivity() != null && !isDetached()) {
                     presenter.getInspricarionMeal();
                     presenter.getCategotyList();
+                    presenter.getMeals("g");
                     presenter.getAreasList();
                 }
             } else {
                 if (isAdded() && getActivity() != null && !isDetached()) {
                     presenter.getInspricarionMeal();
-                    presenter.getMeals("s");
+                    presenter.getMeals("g");
                     presenter.getCategotyList();
                     presenter.getAreasList();
                 }
@@ -160,82 +156,6 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
     }
 
 
-
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-        private final Context context;
-        private List<MealDto> MealDtoList;
-
-        public MyAdapter(Context _context, List<MealDto> users) {
-            super();
-            context = _context;
-            MealDtoList = users;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View v = inflater.inflate(R.layout.fragment_inspiration_card, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
-        }
-
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-            if (MealDtoList.get(position).getStrMealThumb() == null || MealDtoList.get(position).getStrMealThumb().isEmpty() ) {
-                holder.itemView.setVisibility(View.GONE);
-                holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0)); // Hide the item completely
-                return;
-            }
-            holder.nameTxt.setText(MealDtoList.get(position).getStrMeal());
-            Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
-            holder.location.setText(MealDtoList.get(position).getStrArea());
-            holder.category.setText(MealDtoList.get(position).getStrCategory());
-            Glide.with(context).load(CountryFlag.getFlagUrl(MealDtoList.get(position).getStrArea())).placeholder(R.drawable.ic_launcher_foreground).into(holder.flagImage);
-            holder.image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    HomeContentFragmentDirections.ActionHomeContentFragmentToMealDetails action = HomeContentFragmentDirections.actionHomeContentFragmentToMealDetails(MealDtoList.get(position));
-                    Log.i(TAG, "onClick: " + MealDtoList.get(position).getStrMeal());
-                    Navigation.findNavController(view).navigate(action);
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return MealDtoList.size();
-        }
-
-        public void notifyItemChanged(List<MealDto> MealDtos) {
-            this.MealDtoList = MealDtos;
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            ConstraintLayout constraintLayout;
-            View layout;
-            TextView nameTxt, location, category;
-            ImageView image;
-            ImageView flagImage;
-
-
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                layout = itemView;
-                nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
-                image = layout.findViewById(R.id.inspirationCardImage);
-                location = layout.findViewById(R.id.varLocation);
-                category = layout.findViewById(R.id.categoryCard);
-                flagImage = layout.findViewById(R.id.flagImageMealDetails);
-
-
-            }
-        }
-
-    }
 
     public boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -257,7 +177,6 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
     @Override
     public void showCategory(List<String> items) {
-//        populateChipGroup(CategoryChipGroup, items);
         populateChipGroupCategory (CategoryChipGroup, items);
     }
 
@@ -287,7 +206,9 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         GloblaMealList = meals;
         myAdapterCategoty.notifyItemChanged(GloblaMealList);
         myAdapterCategoty.notifyDataSetChanged();
-        myAdapterArea.notifyItemChanged(GloblaMealList);
+        List<MealDto> reversedList = new ArrayList<>(meals);
+        Collections.reverse(reversedList);
+        myAdapterArea.notifyItemChanged(reversedList);
         myAdapterArea.notifyDataSetChanged();
 
     }

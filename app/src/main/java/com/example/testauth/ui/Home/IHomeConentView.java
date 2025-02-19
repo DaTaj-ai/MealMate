@@ -11,9 +11,7 @@ public interface IHomeConentView {
     void showCategory(List<String> items);
     void showIngrdients(List<String> items);
     void showArea(List<String> items);
-
     void showCategoryMeals(List<MealDto> meals);
     void showInspricarionMeal(MealDto mealDto);
-
     void lodingAnimationChangeState(Boolean state);
 }

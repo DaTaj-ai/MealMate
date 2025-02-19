@@ -2,6 +2,8 @@ package com.example.testauth.ui.mealditails;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -144,20 +146,26 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         // Safe Args
         globalMealDto = MealDetailsArgs.fromBundle(getArguments()).getMealto();
         showMeal(globalMealDto);
-        mealDetailsPresentor.getMealByIdRemote(globalMealDto.getIdMeal()).
-                subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread()).doOnNext(mealDto-> {
-                    if(mealDto.getMeals().size()>0){
-                        mealDto.getMeals().get(0);
-                        Log.i(TAG, "onViewCreated: " + mealDto.getMeals().get(0).getStrArea() );
-                        showMeal(mealDto.getMeals().get(0));
-                    }
-                }).subscribe(mealDto ->{if(mealDto.getMeals().size()>0){
-                    mealDto.getMeals().get(0);
-                    Log.i(TAG, "onViewCreated: this" + mealDto.getMeals().get(0).getStrArea() );
-                    showMeal(mealDto.getMeals().get(0));}});
+      if(isNetworkConnected()) {
 
 
+          mealDetailsPresentor.getMealByIdRemote(globalMealDto.getIdMeal()).
+                  subscribeOn(Schedulers.io()).
+                  observeOn(AndroidSchedulers.mainThread()).doOnNext(mealDto -> {
+                      if (mealDto.getMeals().size() > 0) {
+                          mealDto.getMeals().get(0);
+                          Log.i(TAG, "onViewCreated: " + mealDto.getMeals().get(0).getStrArea());
+                          showMeal(mealDto.getMeals().get(0));
+                      }
+                  }).subscribe(mealDto -> {
+                      if (mealDto.getMeals().size() > 0) {
+                          mealDto.getMeals().get(0);
+                          Log.i(TAG, "onViewCreated: this" + mealDto.getMeals().get(0).getStrArea());
+                          showMeal(mealDto.getMeals().get(0));
+                      }
+                  });
+
+      }
 
         WebView webView = view.findViewById(R.id.videoView);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -188,10 +196,12 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         String videoId = "";
         videoId = url.substring(url.indexOf("=") + 1);
         return videoId;
+    };
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-
-    ;
-
 
     void showCalender() {
 
@@ -224,7 +234,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
             super();
             context = _context;
             ingredientDtoViews = ingredients;
-            Log.i(TAG, "MyAdapter: " + ingredients.size());
+            Log.i(TAG, "HomeViewAdapter: " + ingredients.size());
         }
 
         @NonNull

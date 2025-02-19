@@ -3,8 +3,6 @@ package com.example.testauth.ui.search;
 
 
 import android.util.Log;
-import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
@@ -89,9 +87,9 @@ public class SearchFragmentPresenter {
     }
 
     private boolean matchesSearchQuery(MealDto meal, String query) {
-        return containsIgnoreCase(meal.getStrMeal(), query) ||
-                containsIgnoreCase(meal.getStrCategory(), query) ||
-                containsIgnoreCase(meal.getStrArea(), query) ||
+        return isContainsThis(meal.getStrMeal(), query) ||
+                isContainsThis(meal.getStrCategory(), query) ||
+                isContainsThis(meal.getStrArea(), query) ||
                 checkIngredients(meal, query);
     }
 
@@ -129,7 +127,7 @@ public class SearchFragmentPresenter {
         return false;
     }
 
-    public boolean containsIgnoreCase(String source, String query) {
+    public boolean isContainsThis(String source, String query) {
         return source != null && source.toLowerCase().contains(query);
     }
 

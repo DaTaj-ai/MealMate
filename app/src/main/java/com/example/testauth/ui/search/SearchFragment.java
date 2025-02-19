@@ -84,7 +84,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if(isNetworkConnected()){
+        if (isNetworkConnected()) {
             presenter = new SearchFragmentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
             // get  meals
             Disposable mealsObservable = presenter.searchMeals("").doOnNext(mealDtoList -> {
@@ -103,7 +103,8 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
         filteredGroup = view.findViewById(R.id.filterCategoryCard);
 
-        if(isNetworkConnected() ) {
+        if (isNetworkConnected()) {
+
             filterBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -212,19 +213,22 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        emitter.onNext(newText);
+
                         if (newText.equals(" ") || newText.equals("")) {
                             showMeals(GloblaMealList);
                         } else {
+                            emitter.onNext(newText);
                             Log.i(TAG, "onQueryTextChange: " + GloblaMealList.size());
                         }
                         return false;
                     }
                 });
+
                 emitter.setCancellable(() -> searchView.setOnQueryTextListener(null));
             });
             presenter.setSearchQueryObservable(searchQueryObservable);
 
+            // SearchAdapter setup.
             mySearchAdapter = new MySearchAdapter(getContext(), GloblaMealList);
             recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewSearch);
             recyclerView.setHasFixedSize(true);
@@ -233,18 +237,22 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(mySearchAdapter);
 
-        }
-        else {
+        } else {
             Snackbar.make(getView(), "No internet", Snackbar.LENGTH_LONG);
         }
 
     }
 
 
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     private void populateChipGroupCategory(ChipGroup chipGroup, List<String> items) {
         for (String item : items) {
             Chip chip = new Chip(getContext());
-
             chip.setChipBackgroundColorResource(R.color.chip_background_color);
             chip.setTextAppearance(R.style.ChipTextStyle);
             chip.setCheckable(true);
@@ -254,7 +262,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     chip.setChipBackgroundColorResource(R.color.PrimaryColor);
-                    Log.d("Filter", "Selected: Cantury" + item);
                     presenter.filterByCategory(item).doOnNext(mealDtoList -> {
                         GloblaMealList.addAll(mealDtoList.getMeals());
                         mySearchAdapter.notifyItemChanged(mealDtoList.getMeals());
@@ -277,12 +284,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
 
             chipGroup.addView(chip);
         }
-    }
-
-    public boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     @SuppressLint("ResourceAsColor")
@@ -415,79 +416,6 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     }
 
 
-    public class MySearchAdapter extends RecyclerView.Adapter<MySearchAdapter.ViewHolder> {
-        private final Context context;
-        private List<MealDto> MealDtoList;
-
-        public MySearchAdapter(Context _context, List<MealDto> users) {
-            super();
-            context = _context;
-            MealDtoList = users;
-        }
-
-        @NonNull
-        @Override
-        public MySearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View v = inflater.inflate(R.layout.fragment_inspiration_card, parent, false);
-            MySearchAdapter.ViewHolder vh = new MySearchAdapter.ViewHolder(v);
-            return vh;
-        }
-
-
-        @Override
-        public void onBindViewHolder(@NonNull MySearchAdapter.ViewHolder holder, int position) {
-            holder.nameTxt.setText(MealDtoList.get(position).getStrMeal());
-            Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
-            holder.locationTxt.setText(MealDtoList.get(position).getStrArea());
-            holder.categoryTxt.setText(MealDtoList.get(position).getStrCategory());
-            Glide.with(context).load(CountryFlag.getFlagUrl(MealDtoList.get(position).getStrArea())). into(holder.flagImage);
-            holder.image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (MealDtoList.get(position).getStrCategory() == null)  {
-                        SearchFragmentDirections.ActionSearchFragmentToMealDetails action = SearchFragmentDirections.actionSearchFragmentToMealDetails(MealDtoList.get(position));
-                        Navigation.findNavController(view).navigate(action);
-                    }
-
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return MealDtoList.size();
-        }
-
-        public void notifyItemChanged(List<MealDto> MealDtos) {
-            this.MealDtoList = MealDtos;
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            ConstraintLayout constraintLayout;
-            View layout;
-            TextView nameTxt;
-            ImageView image;
-            ImageView flagImage;
-            TextView categoryTxt;
-            TextView locationTxt;
-
-
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                layout = itemView;
-                nameTxt = layout.findViewById(R.id.mealNameInspirationCard);
-                image = layout.findViewById(R.id.inspirationCardImage);
-                flagImage = layout.findViewById(R.id.flagImageMealDetails);
-                categoryTxt = layout.findViewById(R.id.categoryCard);
-                locationTxt = layout.findViewById(R.id.varLocation);
-
-            }
-        }
-
-    }
 }
 
 ;

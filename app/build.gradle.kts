@@ -76,6 +76,8 @@ dependencies {
     implementation ("androidx.core:core-splashscreen:1.0.1") // Splash Screen API
     implementation ("com.airbnb.android:epoxy:5.1.3")
     annotationProcessor("com.airbnb.android:epoxy-processor:5.1.3")  // For code generation
+    implementation("com.github.sparrow007:carouselrecyclerview:1.2.6")
+
 }
 
 

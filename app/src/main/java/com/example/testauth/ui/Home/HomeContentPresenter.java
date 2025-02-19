@@ -26,6 +26,7 @@ public class HomeContentPresenter {
 
     HomeContentFragment ui;
     RepositoryImpl repository;
+    private static final String TAG = "HomeContentPresenter";
 
     public HomeContentPresenter(HomeContentFragment ui, RepositoryImpl repository) {
         this.ui = ui;
@@ -36,7 +37,7 @@ public class HomeContentPresenter {
         repository.getRandomMeal().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).map(meal->meal.getMeals().get(0))
                 .doOnNext( meal->{ui.showInspricarionMeal(meal);}).doOnComplete(()-> {ui.lodingAnimationChangeState(false);}).doOnError(e-> Log.i(TAG, "getInspricarionMeal: " + e.getMessage())).subscribe();}
 
-    private static final String TAG = "HomeContentPresenter";
+
     public void getMeals(String query){
         repository.getRemoteMeals(query).subscribe(new Observer<ListMealDto>() {
             @Override
@@ -93,9 +94,6 @@ public class HomeContentPresenter {
         });
     }
 
-    public Observable<ListMealDto> filterByArea(String areaType){
-        return repository.filterByArea(areaType);
-    }
     public Observable<ListMealDto> filterByCategory(String categoryType){
         return repository.filterByCategory(categoryType);
     }
@@ -129,6 +127,9 @@ public class HomeContentPresenter {
             }
         });
 
+    }
+    public Observable<ListMealDto> filterByArea(String areaType){
+        return repository.filterByArea(areaType);
     }
 
     public void getAreasList(){

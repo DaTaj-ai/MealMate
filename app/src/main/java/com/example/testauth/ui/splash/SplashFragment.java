@@ -46,7 +46,7 @@ public class SplashFragment extends Fragment {
                 startActivity(intent);
                 requireActivity().finish();
             }
-        }, 15);
+        }, 7000);
     }
 
 }

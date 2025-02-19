@@ -69,8 +69,6 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
         favoriteFragmentPresentor = new FavoriteFragmentPresentor(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
         favoriteFragmentPresentor.getAllFavorites();
 
-
-
         myFavoriteAdapter = new MyFavoriteAdapter(getContext(), GloblaMealList);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewFavorite);
         recyclerView.setHasFixedSize(true);
