@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -28,7 +29,9 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
-import com.example.testauth.helper.CountryFlag;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.example.testauth.Models.helper.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
@@ -46,12 +49,12 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
     MealDto GlobalinspirationMealDto;
     List<MealDto> GloblaMealList = new ArrayList<>();
-    RecyclerView recyclerView , recyclerViewArea ;
+    RecyclerView recyclerViewCategory, recyclerViewArea ;
     MyAdapter myAdapterCategoty , myAdapterArea ;
     ChipGroup CategoryChipGroup, ingredientsChipGroup, areaChipGroup;
 
     ImageView InspricationCardImage , inspirationFlag;
-    TextView mealNameInspiration, locationInspiration;
+    TextView mealNameInspiration, categotyInspiration;
     HomeContentPresenter presenter ;
     LottieAnimationView lottieAnimationView;
 
@@ -90,8 +93,8 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
         lottieAnimationView = view.findViewById(R.id.loadingAnimaion);
 
-        locationInspiration = view.findViewById(R.id.varLocationInspiration);
         InspricationCardImage = view.findViewById(R.id.inspirationCardImage);
+        categotyInspiration = view.findViewById(R.id.categoryInspiration);
         mealNameInspiration = view.findViewById(R.id.mealNameInspirationCard);
         inspirationFlag = view.findViewById(R.id.flagImageMealDetails);
 
@@ -108,13 +111,13 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
         Log.i(TAG, "onViewCreated: ");
         myAdapterCategoty = new MyAdapter(getContext(), GloblaMealList);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
-        recyclerView.setHasFixedSize(true);
+        recyclerViewCategory = (RecyclerView) view.findViewById(R.id.recyclerViewCategory);
+        recyclerViewCategory.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(myAdapterCategoty);
+        recyclerViewCategory.setLayoutManager(linearLayoutManager);
+        recyclerViewCategory.setItemAnimator(new DefaultItemAnimator());
+        recyclerViewCategory.setAdapter(myAdapterCategoty);
 
 
         myAdapterArea = new MyAdapter(getContext(), GloblaMealList);
@@ -136,7 +139,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
             Log.i(TAG, "onViewCreated: " + isQuest);
             if (isQuest) {
-                recyclerView.setVisibility(View.GONE);
+                recyclerViewCategory.setVisibility(View.GONE);
                 if (isAdded() && getActivity() != null && !isDetached()) {
                     presenter.getInspricarionMeal();
                     presenter.getCategotyList();
@@ -145,7 +148,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
             } else {
                 if (isAdded() && getActivity() != null && !isDetached()) {
                     presenter.getInspricarionMeal();
-                    presenter.getMeals();
+                    presenter.getMeals("s");
                     presenter.getCategotyList();
                     presenter.getAreasList();
                 }
@@ -180,6 +183,11 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+            if (MealDtoList.get(position).getStrMealThumb() == null || MealDtoList.get(position).getStrMealThumb().isEmpty() ) {
+                holder.itemView.setVisibility(View.GONE);
+                holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0)); // Hide the item completely
+                return;
+            }
             holder.nameTxt.setText(MealDtoList.get(position).getStrMeal());
             Glide.with(context).load(MealDtoList.get(position).getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(holder.image);
             holder.location.setText(MealDtoList.get(position).getStrArea());
@@ -244,13 +252,13 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
             new Handler().postDelayed(() -> {
                 lottieAnimationView.setVisibility(View.GONE);
             }, 2000);
-
         }
     }
 
     @Override
     public void showCategory(List<String> items) {
-        populateChipGroup(CategoryChipGroup, items);
+//        populateChipGroup(CategoryChipGroup, items);
+        populateChipGroupCategory (CategoryChipGroup, items);
     }
 
     @Override
@@ -259,7 +267,7 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         Glide.with(getContext()).load(mealDto.getStrMealThumb()).placeholder(R.drawable.ic_launcher_foreground).into(InspricationCardImage);
         mealNameInspiration.setText(mealDto.getStrMeal());
         Glide.with(getContext()).load(CountryFlag.getFlagUrl(mealDto.getStrArea())).placeholder(R.drawable.ic_launcher_foreground).into(inspirationFlag);
-        locationInspiration.setText(mealDto.getStrMeal());
+        categotyInspiration.setText(mealDto.getStrCategory());
     }
 
     @Override
@@ -279,7 +287,6 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
         GloblaMealList = meals;
         myAdapterCategoty.notifyItemChanged(GloblaMealList);
         myAdapterCategoty.notifyDataSetChanged();
-
         myAdapterArea.notifyItemChanged(GloblaMealList);
         myAdapterArea.notifyDataSetChanged();
 
@@ -314,5 +321,53 @@ public class HomeContentFragment extends Fragment implements IHomeConentView {
             chipGroup.addView(chip);
         }
     }
+
+    @SuppressLint("ResourceAsColor")
+    private void populateChipGroupCategory(ChipGroup chipGroup, List<String> items) {
+        for (String item : items) {
+            Chip chip = new Chip(getContext());
+
+            chip.setChipBackgroundColorResource(R.color.chip_background_color);
+            chip.setTextAppearance(R.style.ChipTextStyle);
+            chip.setCheckable(true);
+            chip.setCheckedIcon(null);
+            Glide.with(getContext())
+                    .asDrawable()
+                    .load(CountryFlag.getFlagUrl(item))
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .into(new CustomTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            chip.setChipIcon(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            chip.setChipIcon(placeholder);
+                        }
+                    });
+
+            chip.setText(item);
+
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    chip.setChipBackgroundColorResource(R.color.PrimaryColor);
+                    chip.setTextColor(R.color.white);
+                    Log.d("Filter", "Selected: Cantury" + item);
+                    presenter.filterByCategory(item).doOnNext(mealDtoList -> {
+                        myAdapterCategoty.notifyItemChanged(mealDtoList.getMeals());
+                        myAdapterCategoty.notifyDataSetChanged();
+                    }).subscribe();
+                } else {
+                    chip.setTextAppearance(R.style.ChipTextStyle);
+                    chip.setChipBackgroundColorResource(R.color.chip_background_color);
+                }
+            });
+
+            chipGroup.addView(chip);
+        }
+    }
+
+
 
 }

@@ -70,18 +70,7 @@ public class MealLocalDataSourceImpl implements MealLocalDataSource {
     public Flowable<MealDto> getMealById(String id) {
         return dao.getById(id);
     }
-//    @Override
-//    public Flowable<List<MealDto>> getMealsForDate(String date) {
-//        return dao.getMealIdsForDate(date)
-//                .flatMap(mealIds ->
-//                        Flowable.fromIterable(mealIds)
-//                                .flatMap(dao::getById)
-//                                .toList()
-//                                .toFlowable()
-//                )
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread());
-//    }
+
 
 
     @Override

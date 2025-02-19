@@ -1,17 +1,16 @@
-package com.example.testauth.ui.mailditails;
+package com.example.testauth.ui.mealditails;
 
 import android.util.Log;
 
 import com.example.testauth.Models.ListMealDto;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
-import com.example.testauth.Repository.Repository;
 import com.example.testauth.Repository.RepositoryImpl;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MealDetailsPresentor {
@@ -38,6 +37,10 @@ public class MealDetailsPresentor {
                    .subscribeOn(Schedulers.io())
                    .observeOn(AndroidSchedulers.mainThread()).
                    doOnComplete(()->view.showSnackBar("Meal Added to Calender Successfully")).doOnError(error -> Log.i(TAG, "insertToCalender: " + error.getMessage()) ).subscribe();
+    };
+
+    Observable<ListMealDto> getMealByIdRemote(String id){
+        return repository.getMealByIdRemote(id);
     };
 
     // change this to RX

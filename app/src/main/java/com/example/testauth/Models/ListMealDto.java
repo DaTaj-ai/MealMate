@@ -9,6 +9,8 @@ public class ListMealDto {
     public ListMealDto(List<MealDto> meals) {
         this.meals = meals;
     }
+    public ListMealDto() {
+    }
 
     public List<MealDto> getMeals() {
         return meals;

@@ -28,6 +28,7 @@ public interface Repository {
     // Fire Base
     public DatabaseReference getMealsFromFireBase() ;
     public DatabaseReference getCalenderFromFireBase();
+    public Observable<ListMealDto> getMealByIdRemote(String query);
 
 
     /*

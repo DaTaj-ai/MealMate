@@ -22,7 +22,7 @@ public interface MealRemoteDataSource {
     public Observable<ListMealDto> getMeals(String query);
 
     public Observable<ListMealDto> getRandomMeal();
-
+    public Observable<ListMealDto> getMealById(String query);
 
     /*
  -----------------------------------------------------------------------

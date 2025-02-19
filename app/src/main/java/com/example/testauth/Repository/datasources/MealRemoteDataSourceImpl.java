@@ -1,6 +1,7 @@
 package com.example.testauth.Repository.datasources;
 
 import android.util.Log;
+
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
 import com.example.testauth.Models.ListIngredientDto;
@@ -11,16 +12,17 @@ import com.example.testauth.Network.ApiMealOperations;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 
 
 public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
@@ -67,6 +69,11 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
         return observable;
     }
 
+    public Observable<ListMealDto> getMealById(String id) {
+        Observable<ListMealDto> observable = apiMealOperations.getMealById(id);
+        return observable;
+    }
+
     public Observable<ListCategoryDto> getAllCategories() {
         return apiMealOperations.getAllCategories("list").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -77,7 +84,17 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
     }
 
     public Observable<ListMealDto> filterByArea(String areaType) {
-        return apiMealOperations.filterByArea(areaType).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return apiMealOperations.filterByArea(areaType)
+                .subscribeOn(Schedulers.io()).
+                doOnNext(listMealDto -> {
+                    listMealDto.getMeals().forEach(mealDto -> {
+                        getMealById(mealDto.getIdMeal()).doOnNext(mealDto1 -> {
+                            Log.i(TAG, "filterByArea: "+mealDto.getIdMeal() );
+                            Log.i(TAG, "filterByArea: " + mealDto.getStrArea()) ;}).subscribe();
+                    });
+                })
+                .subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<ListMealDto> filterByIngredients(String ingredientType) {
@@ -91,7 +108,6 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
     public Observable<ListIngredientDto> getAllIngredients() {
         return apiMealOperations.getAllIngredients("list").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
 
 
     public void insertMealToFireBase(MealDto mealDto) {
@@ -150,27 +166,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
                 .child("meals");
         return mealsRef;
 
-//        mealsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<MealDto> mealsList = new ArrayList<>();
-//
-//                for (DataSnapshot mealSnapshot : snapshot.getChildren()) {
-//                    MealDto meal = mealSnapshot.getValue(MealDto.class);
-//                    if (meal != null) {
-//                        mealsList.add(meal);
-//                        Log.d(TAG, "Meal Found: " + meal.getIdMeal() );
-//                    }
-//                }
-//
-//                Log.d(TAG, "Total Calendar Entries Found: " + mealsList.size());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e(TAG, "Error: " + error.getMessage());
-//            }
-//        });
+
     }
 
 
@@ -184,27 +180,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource {
                 .child(userId)
                 .child("Calender");
         return calendarRef;
-//        calendarRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<MealsCalenderDto> calendarList = new ArrayList<>();
-//
-//                for (DataSnapshot mealSnapshot : snapshot.getChildren()) {
-//                    MealsCalenderDto meal = mealSnapshot.getValue(MealsCalenderDto.class);
-//                    if (meal != null) {
-//                        calendarList.add(meal);
-//                        Log.d(TAG, "Meal Found: " + meal.getMealId() + meal.getDate());
-//                    }
-//                }
-//
-//                Log.d(TAG, "Total Calendar Entries Found: " + calendarList.size());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.e(TAG, "Error: " + error.getMessage());
-//            }
-//        });
+
     }
 
 }

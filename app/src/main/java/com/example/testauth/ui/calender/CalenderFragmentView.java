@@ -1,6 +1,7 @@
 package com.example.testauth.ui.calender;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +24,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.testauth.helper.CountryFlag;
+import com.example.testauth.Models.helper.CountryFlag;
 import com.example.testauth.Models.MealDto;
 import com.example.testauth.Models.MealsCalenderDto;
 import com.example.testauth.R;
 import com.example.testauth.Repository.RepositoryImpl;
 import com.example.testauth.Repository.datasources.MealLocalDataSourceImpl;
 import com.example.testauth.Repository.datasources.MealRemoteDataSourceImpl;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,8 +75,13 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
 
         DateMealsText = view.findViewById(R.id.mealsCalenderText);
 
+
+
         // Presenter
         CalenderFragmentPresenter calenderFragmentPresenter = new CalenderFragmentPresenter(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
+
+        // SharedPreferences
+
 
 
         // RecyclerView
@@ -174,7 +182,12 @@ public class CalenderFragmentView extends Fragment implements ICalenderFragmentV
 
             }
         });
-
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+        Boolean isQuest = sharedPreferences.getBoolean("isQuest", false);
+        if (isQuest) {
+            Snackbar.make(view, "welcome to Guest Mode \n Login to get full access", Snackbar.LENGTH_LONG).show();
+            BackUpBtn.setEnabled(false);
+        }
     }
 
 

@@ -214,7 +214,7 @@ public class SignIn extends Fragment {
 
     }
 
-    void saveUserDataSharedPreferences(View view, String email, String password, String name ) {
+    public void saveUserDataSharedPreferences(View view, String email, String password, String name ) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("email", email);

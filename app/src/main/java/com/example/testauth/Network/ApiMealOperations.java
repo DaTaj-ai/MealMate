@@ -22,26 +22,29 @@ public interface ApiMealOperations {
     @GET("random.php")
     Observable<ListMealDto> getRandomMeals();
 
-//    //Categories,
+    //    //Categories,
     @GET("list.php")
     Observable<ListCategoryDto> getAllCategories(@Query("c") String categoryType);
 
-   // Area,
+    // Area,
     @GET("list.php")
-    Observable<ListAreaDto> getAllAreas(@Query("a")  String areaType);
+    Observable<ListAreaDto> getAllAreas(@Query("a") String areaType);
 
     // Ingredients
     @GET("list.php")
     Observable<ListIngredientDto> getAllIngredients(@Query("i") String ingredientType);
 
     @GET("filter.php")
-    Observable<ListMealDto> filterByArea(@Query("a")  String areaType);
+    Observable<ListMealDto> filterByArea(@Query("a") String areaType);
 
     @GET("filter.php")
-    Observable<ListMealDto> filterByCategory(@Query("c")  String areaType);
+    Observable<ListMealDto> filterByCategory(@Query("c") String areaType);
 
     @GET("filter.php")
-    Observable<ListMealDto> filterByIngredient(@Query("i")  String areaType);
+    Observable<ListMealDto> filterByIngredient(@Query("i") String areaType);
+
+    @GET("lookup.php")
+    Observable<ListMealDto> getMealById(@Query("i") String id);
 
 
 }

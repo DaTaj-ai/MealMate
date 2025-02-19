@@ -14,10 +14,10 @@ import com.example.testauth.Repository.RepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -33,12 +33,12 @@ public class HomeContentPresenter {
     }
 
     public void getInspricarionMeal(){
-        repository.getRemoteMeals("").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).map(meal->meal.getMeals().get(0))
+        repository.getRandomMeal().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).map(meal->meal.getMeals().get(0))
                 .doOnNext( meal->{ui.showInspricarionMeal(meal);}).doOnComplete(()-> {ui.lodingAnimationChangeState(false);}).doOnError(e-> Log.i(TAG, "getInspricarionMeal: " + e.getMessage())).subscribe();}
 
     private static final String TAG = "HomeContentPresenter";
-    public void getMeals(){
-        repository.getRemoteMeals("").subscribe(new Observer<ListMealDto>() {
+    public void getMeals(String query){
+        repository.getRemoteMeals(query).subscribe(new Observer<ListMealDto>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 ui.lodingAnimationChangeState(true);
@@ -84,11 +84,6 @@ public class HomeContentPresenter {
 
             @Override
             public void onError(@NonNull Throwable e) {
-//                if (isNoInternet(e)) {
-//                    ui.showNoInternetAnimation(); // No internet animation
-//                } else {
-//                    ui.showErrorAnimation(); // General error animation
-//                }
             }
 
             @Override
@@ -98,7 +93,13 @@ public class HomeContentPresenter {
         });
     }
 
-    // we dont need it for now
+    public Observable<ListMealDto> filterByArea(String areaType){
+        return repository.filterByArea(areaType);
+    }
+    public Observable<ListMealDto> filterByCategory(String categoryType){
+        return repository.filterByCategory(categoryType);
+    }
+
     public void getIngrdientsList(){
         repository.getAllIngredients().subscribe(new Observer<ListIngredientDto>()
         {
@@ -160,5 +161,7 @@ public class HomeContentPresenter {
         });
 
     }
+
+
 }
 

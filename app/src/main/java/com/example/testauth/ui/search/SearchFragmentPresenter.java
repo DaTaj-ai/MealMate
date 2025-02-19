@@ -53,6 +53,9 @@ public class SearchFragmentPresenter {
     public Observable<ListMealDto> filterByCategory(String categoryType){
         return repo.filterByCategory(categoryType);
     }
+    public Observable<ListMealDto> getMealByIdRemote(String id){
+        return repo.getMealByIdRemote(id);
+    }
     public Observable<ListMealDto> filterByIngredient(String ingredientType) {
         return repo.filterByIngredients(ingredientType);
     }
@@ -94,7 +97,6 @@ public class SearchFragmentPresenter {
 
 
     public boolean checkIngredients(MealDto meal, String query) {
-        // List of all 20 ingredient fields
         List<String> ingredients = Arrays.asList(
                 meal.getStrIngredient1(),
                 meal.getStrIngredient2(),

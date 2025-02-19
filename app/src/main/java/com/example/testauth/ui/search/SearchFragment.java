@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.testauth.helper.CountryFlag;
+import com.example.testauth.Models.helper.CountryFlag;
 import com.example.testauth.Models.ListAreaDto;
 import com.example.testauth.Models.ListCategoryDto;
 import com.example.testauth.Models.ListIngredientDto;
@@ -70,8 +70,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     }
 
     void addFilterChip(Chip item) {
-        Chip chip = new Chip(getContext());
-
+        filteredGroup.removeAllViews();
         this.filteredGroup.addView(item);
     }
 
@@ -127,7 +126,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                         @Override
                         public void onNext(@io.reactivex.rxjava3.annotations.NonNull ListCategoryDto listCategoryDto) {
                             if (categoryGroup != null && listCategoryDto != null) {
-                                populateChipGroup(categoryGroup, listCategoryDto.toList());
+                                populateChipGroupCategory(categoryGroup, listCategoryDto.toList());
                             }
                         }
 
@@ -242,7 +241,7 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
     }
 
 
-    private void populateChipGroup(ChipGroup chipGroup, List<String> items) {
+    private void populateChipGroupCategory(ChipGroup chipGroup, List<String> items) {
         for (String item : items) {
             Chip chip = new Chip(getContext());
 
@@ -261,6 +260,9 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
                         mySearchAdapter.notifyItemChanged(mealDtoList.getMeals());
                         mySearchAdapter.notifyDataSetChanged();
                     }).subscribe();
+                    if (chip.getParent() != null) {
+                        ((ViewGroup) chip.getParent()).removeView(chip);
+                    }
                     addFilterChip(chip);
                     if (bottomSheetDialog != null && bottomSheetDialog.isShowing()) {
                         bottomSheetDialog.dismiss();
@@ -443,8 +445,11 @@ public class SearchFragment extends Fragment implements ISearchFragmentUI {
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SearchFragmentDirections.ActionSearchFragmentToMealDetails action = SearchFragmentDirections.actionSearchFragmentToMealDetails(MealDtoList.get(position));
-                    Navigation.findNavController(view).navigate(action);
+                    if (MealDtoList.get(position).getStrCategory() == null)  {
+                        SearchFragmentDirections.ActionSearchFragmentToMealDetails action = SearchFragmentDirections.actionSearchFragmentToMealDetails(MealDtoList.get(position));
+                        Navigation.findNavController(view).navigate(action);
+                    }
+
                 }
             });
 

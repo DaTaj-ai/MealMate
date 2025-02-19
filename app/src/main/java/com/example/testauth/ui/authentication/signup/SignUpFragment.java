@@ -1,11 +1,13 @@
 package com.example.testauth.ui.authentication.signup;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import com.example.testauth.HomeActivity;
 import com.example.testauth.Models.UserDto;
 import com.example.testauth.R;
+import com.example.testauth.ui.authentication.signin.SignIn;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,28 +75,32 @@ public class SignUpFragment extends Fragment {
                 String emailStr = email.getText().toString();
                 String passwordStr = password.getText().toString();
 
-// Sign up with Firebase Authentication
                 auth.createUserWithEmailAndPassword(emailStr, passwordStr)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Get the unique UID from Firebase Authentication
                                 String userId = auth.getCurrentUser().getUid();
 
-                                // Create User DTO
                                 UserDto userDto = new UserDto(nameStr, emailStr, passwordStr);
 
-                                // Save user data in Firebase Realtime Database
                                 reference.child(userId).setValue(userDto)
                                         .addOnCompleteListener(task1 -> {
                                             if (task1.isSuccessful()) {
+
                                                 Snackbar snackbar = Snackbar.make(v, "Sign up successfully", Snackbar.LENGTH_LONG);
                                                 snackbar.show();
 
+                                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                editor.putString("email",  emailStr);
+                                                editor.putString("password", passwordStr);
+                                                editor.putString("username", nameStr);
+                                                editor.putBoolean("isQuest", false);
+                                                editor.apply();
                                                 Intent intent = new Intent(requireActivity(), HomeActivity.class);
                                                 startActivity(intent);
                                                 requireActivity().finish();
 
-                                                //Navigation.findNavController(v).navigate(R.id.action_signUpFragment_to_signIn2);
                                             } else {
                                                 Snackbar snackbar = Snackbar.make(v, task1.getException().getMessage(), Snackbar.LENGTH_LONG);
                                                 snackbar.show();
@@ -107,51 +114,6 @@ public class SignUpFragment extends Fragment {
 
             }
 
-
-
-//            {
-//                String nameStr = name.getText().toString();
-//                String emailStr = email.getText().toString();
-//                String passwordStr = password.getText().toString();
-//
-//                // Query the database to check if the email exists
-//                Query emailQuery = reference.orderByChild("email").equalTo(emailStr);
-//                emailQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        if (snapshot.exists()) {
-//                            // Email already exists;
-//                            Snackbar snackbar = Snackbar.make(v, "Email already exists!", Snackbar.LENGTH_LONG);
-//                            email.setError("Invalid Credentials");
-//                            email.requestFocus();
-//                            snackbar.show();
-//                        } else {
-//                            UserDto userDto = new UserDto(nameStr, emailStr, passwordStr);
-//                            reference.child(emailStr.replace(".", ",")).setValue(userDto)
-//                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<Void> task) {
-//                                            if (task.isSuccessful()) {
-//                                                Snackbar snackbar = Snackbar.make(v, "Sign in successfully", Snackbar.LENGTH_LONG);
-//                                                snackbar.show();
-//                                                Navigation.findNavController(v).navigate(R.id.action_signUpFragment_to_signIn2);
-//                                            } else {
-//                                                Snackbar snackbar = Snackbar.make(v, task.getException().getMessage(), Snackbar.LENGTH_LONG);
-//                                                snackbar.show();
-//                                            }
-//                                        }
-//                                    });
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        Snackbar snackbar = Snackbar.make(v, "Check your connection: ", Snackbar.LENGTH_LONG);
-//                        snackbar.show();
-//                    }
-//                });
-//
-//            }
         });
 
 

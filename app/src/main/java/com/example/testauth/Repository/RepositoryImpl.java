@@ -96,12 +96,18 @@ public Observable<ListMealDto> getRemoteMeals(String query) {
     return remoteDataSourceMeal.getMeals(query);
 }
 
+public Observable<ListMealDto> getMealByIdRemote(String query) {
+    return remoteDataSourceMeal.getMealById(query);
+}
+
 public Observable<ListMealDto> getRandomMeal() {
         if (cachedGetRandomMeal == null) {
             cachedGetRandomMeal = remoteDataSourceMeal.getRandomMeal();
         }
         return cachedGetRandomMeal;
     }
+
+
 
 
 

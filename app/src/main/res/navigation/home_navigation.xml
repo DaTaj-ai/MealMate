@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/mealDetails"
-        android:name="com.example.testauth.ui.mailditails.MealDetails"
+        android:name="com.example.testauth.ui.mealditails.MealDetails"
         android:label="MealDetails">
         <argument
             android:name="mealto"

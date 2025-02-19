@@ -80,16 +80,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:src="@tools:sample/avatars" />
+
                 <ImageView
                     android:id="@+id/flagImageMealDetails"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="4dp"
                     android:elevation="10dp"
                     android:scaleType="centerCrop"
-                    app:layout_constraintBottom_toBottomOf="@+id/varLocationInspiration"
-                    app:layout_constraintEnd_toStartOf="@+id/varLocationInspiration"
-                    app:layout_constraintTop_toTopOf="@+id/varLocationInspiration" />
+                    app:layout_constraintBottom_toTopOf="@+id/categoryInspiration"
+                    app:layout_constraintEnd_toEndOf="@+id/categoryInspiration"
+                    app:layout_constraintHorizontal_bias="0.423"
+                    app:layout_constraintStart_toStartOf="@+id/categoryInspiration" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -103,8 +106,8 @@
 
                 <TextView
                     android:id="@+id/mealNameInspirationCard"
-                    android:layout_width="200dp"
-                    android:layout_height="42dp"
+                    android:layout_width="209dp"
+                    android:layout_height="71dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginBottom="16dp"
                     android:fontFamily="@font/poppinsblack"
@@ -114,18 +117,18 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/varLocationInspiration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="12dp"
-                    android:fontFamily="@font/poppinsregular"
-                    android:text="location "
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toTopOf="@+id/categoryInspiration"
-                    app:layout_constraintEnd_toEndOf="parent" />
+<!--                <TextView-->
+<!--                    android:id="@+id/varLocationInspiration"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginBottom="12dp"-->
+<!--                    android:fontFamily="@font/poppinsregular"-->
+<!--                    android:text="location "-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="14sp"-->
+<!--                    app:layout_constraintBottom_toTopOf="@+id/categoryInspiration"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent" />-->
 
                 <TextView
                     android:id="@+id/categoryInspiration"
@@ -166,6 +169,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            app:singleSelection="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -176,7 +180,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
+                app:singleSelection="true"
                 android:layout_marginTop="20dp"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
                 app:chipSpacing="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory"
@@ -201,6 +207,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:singleSelection="true"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory">
@@ -214,6 +221,7 @@
                 app:chipSpacing="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/recyclerViewCategory"
+                app:singleSelection="true"
                 app:singleLine="true">
 
                 <com.google.android.material.chip.Chip
@@ -247,7 +255,7 @@
             android:layout_width="match_parent"
             android:layout_height="375dp"
             android:layout_marginTop="120dp"
-            android:elevation="100dp"
+            android:elevation="1dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

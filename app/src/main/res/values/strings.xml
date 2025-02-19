@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">testAuth</string>
+    <string name="app_name">MealMate</string>
     <string name="client_id">864392789980-b73kgqdcgbi6asrkje4eju3bcpkioka8.apps.googleusercontent.com</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
