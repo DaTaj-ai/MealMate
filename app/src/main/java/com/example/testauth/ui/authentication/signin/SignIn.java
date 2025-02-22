@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -52,7 +53,9 @@ public class SignIn extends Fragment {
     GoogleSignInClient googleSignInClient;
     ShapeableImageView imageView;
 
-    EditText loginEmail, loginPassword;
+    EditText loginEmail;
+
+    TextInputLayout loginPassword ;
     TextView name, mail;
 
     TextView goToSignUp, goToGuest;
@@ -183,7 +186,7 @@ public class SignIn extends Fragment {
 
     public void checkUser(View view) {
         String userUsername = loginEmail.getText().toString();
-        String userPassword = loginPassword.getText().toString();
+        String userPassword = loginPassword.getEditText().getText().toString();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signInWithEmailAndPassword(userUsername, userPassword)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {

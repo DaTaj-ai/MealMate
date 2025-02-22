@@ -19,6 +19,7 @@ import com.example.testauth.HomeActivity;
 import com.example.testauth.Models.UserDto;
 import com.example.testauth.R;
 import com.example.testauth.ui.authentication.signin.SignIn;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,7 +35,7 @@ public class SignUpFragment extends Fragment {
     DatabaseReference reference;
     EditText name ,email ,password ,confirmPassword ;
     MaterialButton signUpBtn ;
-    ImageButton signInWithGoogle ;
+    SignInButton signInWithGoogle ;
 
     TextView sginIN ;
 

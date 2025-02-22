@@ -13,6 +13,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.testauth.Models.helper.CountryFlag;
 import com.example.testauth.Models.MealDto;
@@ -39,7 +41,7 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
     List<MealDto> GloblaMealList = new ArrayList<>();
     RecyclerView recyclerView;
     MyFavoriteAdapter myFavoriteAdapter;
-
+    LottieAnimationView emptyAnimation;
     FavoriteFragmentPresentor favoriteFragmentPresentor;
     private static final String TAG = "HomeContentFragment";
 
@@ -68,7 +70,7 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
         super.onViewCreated(view, savedInstanceState);
         favoriteFragmentPresentor = new FavoriteFragmentPresentor(this, RepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
         favoriteFragmentPresentor.getAllFavorites();
-
+        emptyAnimation = view.findViewById(R.id.empty);
         myFavoriteAdapter = new MyFavoriteAdapter(getContext(), GloblaMealList);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewFavorite);
         recyclerView.setHasFixedSize(true);
@@ -76,6 +78,17 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
         linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(myFavoriteAdapter);
+    }
+
+    @Override
+    public void setEmptyAnimation(Boolean state) {
+        if (state) {
+            emptyAnimation.setVisibility(View.VISIBLE);
+        } else {
+            new Handler().postDelayed(() -> {
+                emptyAnimation.setVisibility(View.GONE);
+            }, 2000);
+        }
     }
 
     public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.ViewHolder> {
@@ -117,10 +130,10 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
             holder.deleteFromFavoriteBtn.setVisibility(View.VISIBLE);
             holder.deleteFromFavoriteBtn.setBackgroundResource(R.drawable.delete);
             holder.deleteFromFavoriteBtn.setOnClickListener(v -> {
-            ObjectAnimator animator = ObjectAnimator.ofFloat(v, "translationX", 0f, 100f);
-            animator.setDuration(500);
-            animator.setInterpolator(new AccelerateDecelerateInterpolator());
-            animator.start();
+//            ObjectAnimator animator = ObjectAnimator.ofFloat(v, "translationX", 0f, 100f);
+//            animator.setDuration(500);
+//            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+//            animator.start();
             Snackbar.make(v, "Meal Deleted From Favorites", Snackbar.LENGTH_LONG).show();
 
             MealDtoList.get(position).setFavorite(false);
@@ -128,8 +141,12 @@ public class FavoriteFragment extends Fragment implements IFavoriteFragment {
             notifyItemChanged(MealDtoList);
             notifyDataSetChanged();
         });
-
-
+            if (MealDtoList.size() == 0) {
+                setEmptyAnimation(true);
+            }
+            else{
+                setEmptyAnimation(false);
+            }
         }
 
         @Override

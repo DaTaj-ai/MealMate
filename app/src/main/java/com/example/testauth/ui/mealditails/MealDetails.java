@@ -134,38 +134,52 @@ public class MealDetails extends Fragment implements IMealDetailsView {
 
         MaterialButton addToCalenderBtn = view.findViewById(R.id.addToCalenderBtn);
         if (isQuest) {
-            favoriteBtn.setEnabled(false);
-            addToCalenderBtn.setEnabled(false);
-            Snackbar.make(view, "welcome to Guest Mode \n Login to get full access", Snackbar.LENGTH_LONG).show();
+            favoriteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Snackbar.make(view, "Login to get full access", Snackbar.LENGTH_LONG).show();
+                }
+            });
+            addToCalenderBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Snackbar.make(view, "Login to get full access", Snackbar.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            addToCalenderBtn.setOnClickListener(v -> {
+                showCalender();
+            });
+            favoriteBtn.setOnClickListener(v -> {
+                globalMealDto.setFavorite(true);
+                mealDetailsPresentor.insertMeal(globalMealDto).doOnComplete(() -> showSnackBar("Meal Added to Favorite Successfully")).subscribe();
+                mealDetailsPresentor.insertMealToFireBase(globalMealDto);
+            });
         }
-
-        addToCalenderBtn.setOnClickListener(v -> {
-            showCalender();
-        });
 
         // Safe Args
         globalMealDto = MealDetailsArgs.fromBundle(getArguments()).getMealto();
         showMeal(globalMealDto);
-      if(isNetworkConnected()) {
+        if (isNetworkConnected()) {
 
 
-          mealDetailsPresentor.getMealByIdRemote(globalMealDto.getIdMeal()).
-                  subscribeOn(Schedulers.io()).
-                  observeOn(AndroidSchedulers.mainThread()).doOnNext(mealDto -> {
-                      if (mealDto.getMeals().size() > 0) {
-                          mealDto.getMeals().get(0);
-                          Log.i(TAG, "onViewCreated: " + mealDto.getMeals().get(0).getStrArea());
-                          showMeal(mealDto.getMeals().get(0));
-                      }
-                  }).subscribe(mealDto -> {
-                      if (mealDto.getMeals().size() > 0) {
-                          mealDto.getMeals().get(0);
-                          Log.i(TAG, "onViewCreated: this" + mealDto.getMeals().get(0).getStrArea());
-                          showMeal(mealDto.getMeals().get(0));
-                      }
-                  });
+            mealDetailsPresentor.getMealByIdRemote(globalMealDto.getIdMeal()).
+                    subscribeOn(Schedulers.io()).
+                    observeOn(AndroidSchedulers.mainThread()).doOnNext(mealDto -> {
+                        if (mealDto.getMeals().size() > 0) {
+                            mealDto.getMeals().get(0);
+                            Log.i(TAG, "onViewCreated: " + mealDto.getMeals().get(0).getStrArea());
+                            showMeal(mealDto.getMeals().get(0));
+                        }
+                    }).subscribe(mealDto -> {
+                        if (mealDto.getMeals().size() > 0) {
+                            mealDto.getMeals().get(0);
+                            Log.i(TAG, "onViewCreated: this" + mealDto.getMeals().get(0).getStrArea());
+                            showMeal(mealDto.getMeals().get(0));
+                        }
+                    });
 
-      }
+        }
 
         WebView webView = view.findViewById(R.id.videoView);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -183,11 +197,7 @@ public class MealDetails extends Fragment implements IMealDetailsView {
 
         webView.loadData(html, "text/html", "utf-8");
 
-        favoriteBtn.setOnClickListener(v -> {
-            globalMealDto.setFavorite(true);
-            mealDetailsPresentor.insertMeal(globalMealDto).doOnComplete(() -> showSnackBar("Meal Added to Favorite Successfully")).subscribe();
-            mealDetailsPresentor.insertMealToFireBase(globalMealDto);
-        });
+
 
     }
 
@@ -196,7 +206,10 @@ public class MealDetails extends Fragment implements IMealDetailsView {
         String videoId = "";
         videoId = url.substring(url.indexOf("=") + 1);
         return videoId;
-    };
+    }
+
+    ;
+
     public boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();

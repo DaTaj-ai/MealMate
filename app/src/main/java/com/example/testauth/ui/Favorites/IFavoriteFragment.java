@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IFavoriteFragment {
     public void showdata(List<MealDto> meals);
+    public void setEmptyAnimation(Boolean state);
 }

@@ -18,7 +18,7 @@
     <string name="enter_password">Enter Password</string>
     <string name="emailConst">Email</string>
     <string name="helloConst">Hello!</string>
-    <string name="or_sign_up_withConst">--- Or Sign Up with ---</string>
+    <string name="or_sign_up_withConst">--- Or Sign up with ---</string>
     <string name="profile">Profile</string>
     <string name="Favorites">Favorite</string>
     <string name="search_menu">Search</string>
@@ -50,4 +50,5 @@
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
+    <string name="or_sign_in_with">--- Or Sign in with ---</string>
 </resources>

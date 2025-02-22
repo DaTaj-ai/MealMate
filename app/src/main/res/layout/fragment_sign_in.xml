@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="31dp"
-        android:layout_marginTop="94dp"
+        android:layout_marginTop="54dp"
         android:fontFamily="@font/poppinsblack"
         android:text="@string/helloConst"
         android:textColor="@color/black"
@@ -59,10 +59,11 @@
 
     <EditText
         android:id="@+id/editTextTextEmailAddressSginin"
-        android:layout_width="315dp"
+        android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
         android:autofillHints="emailAddress"
         android:background="@drawable/edit_text_border"
         android:hint="@string/email"
@@ -74,23 +75,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailConst" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/editTextPasswordSignin"
-        android:layout_width="315dp"
+        android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="4dp"
-        android:autofillHints="password"
+        android:layout_marginEnd="32dp"
         android:background="@drawable/edit_text_border"
+        android:backgroundTint="@color/backGroundPages"
         android:hint="@string/password"
-        android:inputType="textPassword"
-        android:paddingStart="12dp"
-        android:textAppearance="?android:textAppearanceMedium"
         android:textColorHint="@color/edit_text_Border"
-        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ConstPassword"
-        tools:ignore="RtlSymmetry" />
+        app:passwordToggleEnabled="true"
+        tools:ignore="RtlSymmetry">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_border"
+            android:inputType="textPassword"
+            app:hintEnabled="false"
+            android:paddingStart="12dp"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColorHint="@color/edit_text_Border"
+            android:textSize="18sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <TextView
         android:id="@+id/forgotPassword"
@@ -154,10 +166,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/signUpBtn"
-        android:layout_width="315dp"
+        android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="40dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="@color/PrimaryColor"
         android:fontFamily="@font/poppinsblack"
         android:text="Sign in"
@@ -200,7 +213,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:fontFamily="@font/poppinsblack"
-        android:text="@string/or_sign_up_withConst"
+        android:text="@string/or_sign_in_with"
         android:textColor="@color/Mygray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
